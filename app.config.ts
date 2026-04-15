@@ -29,6 +29,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: {
     favicon: './assets/favicon.png',
   },
+  plugins: ['expo-sqlite'],
   extra: {
     revenueCatApiKey: process.env.REVENUECAT_API_KEY ?? '',
   },

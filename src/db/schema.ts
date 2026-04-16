@@ -12,3 +12,8 @@ export const pets = sqliteTable('pets', {
   createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const categories = sqliteTable('categories', {
+  id: int('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+});

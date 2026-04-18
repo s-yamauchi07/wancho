@@ -28,3 +28,13 @@ export const expenses = sqliteTable('expenses', {
   createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const plans = sqliteTable('plans', {
+  id: int('id').primaryKey({ autoIncrement: true }),
+  petId: int('pet_id').notNull().references(() => pets.id),
+  name: text('name').notNull(),
+  amount: int('amount').notNull(),
+  scheduledMonth: text('scheduled_month').notNull(),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});

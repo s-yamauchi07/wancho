@@ -17,3 +17,14 @@ export const categories = sqliteTable('categories', {
   id: int('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
 });
+
+export const expenses = sqliteTable('expenses', {
+  id: int('id').primaryKey({ autoIncrement: true }),
+  petId: int('pet_id').notNull().references(() => pets.id),
+  categoryId: int('category_id').notNull().references(() => categories.id),
+  amount: int('amount').notNull(),
+  date: text('date').notNull(),
+  memo: text('memo'),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});

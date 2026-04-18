@@ -1,6 +1,11 @@
 import { sql } from 'drizzle-orm';
 import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
+const timestamps = {
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+};
+
 export const pets = sqliteTable('pets', {
   id: int('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
@@ -9,8 +14,7 @@ export const pets = sqliteTable('pets', {
   breed: text('breed'),
   gender: text('gender'),
   savingsGoal: int('savings_goal'),
-  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  ...timestamps,
 });
 
 export const categories = sqliteTable('categories', {
@@ -25,8 +29,7 @@ export const expenses = sqliteTable('expenses', {
   amount: int('amount').notNull(),
   date: text('date').notNull(),
   memo: text('memo'),
-  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  ...timestamps,
 });
 
 export const plans = sqliteTable('plans', {
@@ -35,6 +38,5 @@ export const plans = sqliteTable('plans', {
   name: text('name').notNull(),
   amount: int('amount').notNull(),
   scheduledMonth: text('scheduled_month').notNull(),
-  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  ...timestamps,
 });

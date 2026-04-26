@@ -3,7 +3,7 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Text, View } from 'react-native';
 import { db } from '@/db';
 import migrations from '@/db/migrations/migrations';
-import TabNavigator from '@/navigation/TabNavigator';
+import RootNavigator from '@/navigation/RootNavigator';
 
 export default function App() {
   const { success, error } = useMigrations(db, migrations);
@@ -26,7 +26,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <TabNavigator />
+      <RootNavigator />
     </NavigationContainer>
   );
 }

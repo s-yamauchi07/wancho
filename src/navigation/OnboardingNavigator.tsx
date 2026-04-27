@@ -12,7 +12,7 @@ const Stack = createNativeStackNavigator<OnboardingParamList>();
 
 export default function OnboardingNavigator() {
   return(
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="PetRegister" component={PetRegisterScreen} />
     </Stack.Navigator>

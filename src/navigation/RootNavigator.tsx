@@ -19,7 +19,7 @@ export default function RootNavigator() {
   if (isFirstLaunch === null) return null;
 
   return(
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isFirstLaunch ? (
         <Stack.Screen name='OnboardingNavigator' component={OnboardingNavigator} />
       ) : (

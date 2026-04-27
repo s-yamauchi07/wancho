@@ -94,6 +94,11 @@ export default function WelcomeScreen() {
             {currentIndex === slides.length - 1 ? 'はじめる' : '次へ'}
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate('PetRegister')}>
+          <Text style={styles.buttonText}>
+            スキップ
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

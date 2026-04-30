@@ -24,6 +24,10 @@ export default function PetRegisterScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>わんこの登録をしよう</Text>
+        <Text style={styles.subtitle}>まずは大切な家族のプロフィールを教えてね</Text>
+      </View>
       {/* Controllerを使って値を検知。renderの引数のfieldはuseControllerPropsの値。value=現在の入力されている値 */}
       {/* NOTE: https://react-hook-form.com/docs/usecontroller */}
       <Controller
@@ -78,6 +82,21 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 32,
+    gap: 8,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
   imageArea: {
     width: 140,

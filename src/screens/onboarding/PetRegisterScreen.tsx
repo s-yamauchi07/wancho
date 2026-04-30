@@ -46,7 +46,7 @@ export default function PetRegisterScreen() {
           </TouchableOpacity>
         }
       />
-      <View>
+      <View style={styles.nameInput}>
         <Text>おなまえ(必須)</Text>
         <Controller
           control={control}
@@ -124,17 +124,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
   },
+  nameInput: {
+    justifyContent: 'flex-start',
+    gap: 8,
+  },
   inputForm: {
+    width: 200,
     paddingVertical: 14,
     paddingHorizontal: 48,
     borderWidth:1,
-    borderRadius: 30,
+    borderRadius: 10,
   },
   button: {
     backgroundColor: '#333',
     paddingVertical: 14,
     paddingHorizontal: 48,
     borderRadius: 30,
+    marginTop: 60
   },
   buttonText: {
     color: '#fff',

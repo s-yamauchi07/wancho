@@ -1,6 +1,6 @@
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Image, View, TextInput, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, View, TextInput, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { z } from 'zod';
 
 const petSchema = z.object({
@@ -17,6 +17,10 @@ export default function PetRegisterScreen() {
     resolver: zodResolver(petSchema),
     defaultValues: { name: '', photoUri: null },
   })
+
+  const onSubmit = (data: PetSchema) => {
+    console.log(data);
+  }
 
   return (
     <View style={styles.container}>
@@ -39,7 +43,7 @@ export default function PetRegisterScreen() {
         }
       />
       <View>
-        <Text>おなまえ</Text>
+        <Text>おなまえ(必須)</Text>
         <Controller
           control={control}
           name='name'
@@ -49,12 +53,23 @@ export default function PetRegisterScreen() {
                 onChangeText={onChange}
                 value={value}
                 placeholder='ぽち'
+                style={styles.inputForm}
               />
             </>
           }
         />
+        {errors.name && <Text>お名前は必須です</Text>}
       </View>
+      {/* ボタンエリア */}
+      <Pressable 
+        onPress={handleSubmit(onSubmit)}
+        disabled={!!errors.name}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>登録</Text>
+      </Pressable>
     </View>
+
   );
 }
 
@@ -89,5 +104,22 @@ const styles = StyleSheet.create({
   imagePlaceholderText: {
     fontSize: 14,
     color: '#999',
+  },
+  inputForm: {
+    paddingVertical: 14,
+    paddingHorizontal: 48,
+    borderWidth:1,
+    borderRadius: 30,
+  },
+  button: {
+    backgroundColor: '#333',
+    paddingVertical: 14,
+    paddingHorizontal: 48,
+    borderRadius: 30,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

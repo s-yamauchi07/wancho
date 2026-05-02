@@ -17,6 +17,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: false,
     bundleIdentifier: 'com.wancho.app',
+    infoPlist: {
+      NSPhotoLibraryUsageDescription: 'わんちょのプロフィール写真を設定するために写真へのアクセスが必要です。',
+    },
   },
   android: {
     adaptiveIcon: {
@@ -29,7 +32,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: {
     favicon: './assets/favicon.png',
   },
-  plugins: ['expo-sqlite'],
+  plugins: ['expo-sqlite', 'expo-image-picker'],
   extra: {
     revenueCatApiKey: process.env.REVENUECAT_API_KEY ?? '',
   },

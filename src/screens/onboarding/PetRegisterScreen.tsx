@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   Pressable
 } from 'react-native';
-import { useOnboarding } from '@/hooks/useOnboarding';
+import { useOnboardingStore } from '@/store/onboardingStore';
 
 const petSchema = z.object({
   photoUri: z.string().nullable(),
@@ -25,7 +25,7 @@ type PetSchema = z.infer<typeof petSchema>;
 
 export default function PetRegisterScreen() {
   const { addPet } = usePetStore();
-  const { completeOnboarding } = useOnboarding();
+  const { completeOnboarding } = useOnboardingStore();
 
   // フォームの型をPetSchema型として管理し、バリデーションをzodResolverに委譲。
   const { control, handleSubmit, formState: { errors } } = useForm<PetSchema>({

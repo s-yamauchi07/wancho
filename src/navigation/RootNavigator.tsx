@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator from './TabNavigator'
 import OnboardingNavigator from "./OnboardingNavigator";
-import { useOnboarding } from "@/hooks/useOnboarding";
+import { useOnboardingStore } from "@/store/onboardingStore";
 
 type RootParamList = {
   OnboardingNavigator: undefined;
@@ -11,9 +12,12 @@ type RootParamList = {
 const Stack = createNativeStackNavigator<RootParamList>();
 
 export default function RootNavigator() {
-  const { isFirstLaunch } = useOnboarding();
-
-  // useOnboardingは非同期のため、AsyncStorageの読み込み完了までisFirstLaunchがnull.
+  const { isFirstLaunch, checkFirstLaunch } = useOnboardingStore();
+  
+  useEffect(() => {
+    checkFirstLaunch();
+  },[]);
+  // useOnboardingStoreは非同期のため、AsyncStorageの読み込み完了までisFirstLaunchがnull.
   // 現状null = false判定と同じ扱いになるため、TabNavigationが表示されないように早期returnする。
   // FIXME: 今後LoadingIndicatorなどでUIを整える
   if (isFirstLaunch === null) return null;

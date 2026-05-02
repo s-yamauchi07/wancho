@@ -1,7 +1,9 @@
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Image, View, TextInput, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { useState } from 'react';
+import { Alert, Image, View, TextInput, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { z } from 'zod';
+import * as ImagePicker from 'expo-image-picker'; 
 
 const petSchema = z.object({
   photoUri: z.string().nullable(),
@@ -18,9 +20,31 @@ export default function PetRegisterScreen() {
     defaultValues: { name: '', photoUri: null },
   })
 
+  const pickImage = async(onChange: any) => {
+    // 権限をリクエストし、結果をpermissionResultに保持。
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    // 権限を拒否している場合は中断
+    if (!permissionResult.granted) {
+      Alert.alert('写真へのアクセス許可が必要です');
+      return;
+    }
+
+    let imagePickResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    })
+
+    // 画像の取得が成功したら、imageuriをstateで管理する。
+    if (!imagePickResult.canceled) {
+      onChange(imagePickResult.assets[0].uri)
+    }
+  };
+
   const onSubmit = (data: PetSchema) => {
     console.log(data);
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -33,8 +57,8 @@ export default function PetRegisterScreen() {
       <Controller
         control={control}
         name='photoUri'
-        render={({ field: { value } }) =>
-          <TouchableOpacity style={styles.imageArea} onPress={() => console.log('画像選択')}>
+        render={({ field: { value, onChange } }) =>
+          <TouchableOpacity style={styles.imageArea} onPress={() => pickImage(onChange)}>
             {value ? (
               <Image source={{ uri: value }} style={styles.image} />
             ) : (

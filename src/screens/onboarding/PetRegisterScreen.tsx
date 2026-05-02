@@ -20,7 +20,7 @@ export default function PetRegisterScreen() {
     defaultValues: { name: '', photoUri: null },
   })
 
-  const pickImage = async(onChange: any) => {
+  const pickImage = async(onChange: (url: string | null) => void) => {
     // 権限をリクエストし、結果をpermissionResultに保持。
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 

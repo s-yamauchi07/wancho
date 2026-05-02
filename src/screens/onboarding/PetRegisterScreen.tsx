@@ -1,6 +1,6 @@
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { usePetStore } from '@/store/petStore';
 import { Alert, Image, View, TextInput, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { z } from 'zod';
 import * as ImagePicker from 'expo-image-picker'; 
@@ -14,6 +14,8 @@ const petSchema = z.object({
 type PetSchema = z.infer<typeof petSchema>;
 
 export default function PetRegisterScreen() {
+  const { addPet } = usePetStore();
+
   // フォームの型をPetSchema型として管理し、バリデーションをzodResolverに委譲。
   const { control, handleSubmit, formState: { errors } } = useForm<PetSchema>({
     resolver: zodResolver(petSchema),
@@ -30,7 +32,7 @@ export default function PetRegisterScreen() {
       return;
     }
 
-    let imagePickResult = await ImagePicker.launchImageLibraryAsync({
+    const imagePickResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
@@ -42,8 +44,8 @@ export default function PetRegisterScreen() {
     }
   };
 
-  const onSubmit = (data: PetSchema) => {
-    console.log(data);
+  const onSubmit = async(data: PetSchema) => {
+    await addPet(data);
   };
 
   return (

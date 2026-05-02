@@ -41,7 +41,7 @@ export const usePetStore = create<PetState & PetActions>((set) => ({
       const newPet = await addPet(input);
       set((state) => ({ pets: [...state.pets, newPet] }));
     } catch (e) {
-      set({ error: 'ペットの追加に失敗しました' });
+      set({ error: 'ペットの登録に失敗しました' });
     } finally {
       set({ isLoading: false });
     }

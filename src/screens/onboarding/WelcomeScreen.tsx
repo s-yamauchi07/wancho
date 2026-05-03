@@ -43,7 +43,7 @@ export default function WelcomeScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
-  // NOTE: viewableItemsは￥ ＝今画面に表示されている要素を返す。
+  // NOTE: viewableItemsは今画面に表示されている要素を返す。
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     if (viewableItems.length > 0) {
       setCurrentIndex(viewableItems[0].index ?? 0);

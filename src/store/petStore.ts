@@ -12,7 +12,7 @@ type PetState = {
 // Actionの型
 type PetActions = {
   fetchPets: () => Promise<void>;
-  addPet: (input: NewPet) => Promise<void>;
+  addPet: (input: NewPet) => Promise<boolean>;
   updatePet: (id: number, input: UpdatePet) => Promise<void>;
   deletePet: (id: number) => Promise<void>;
 };
@@ -40,8 +40,10 @@ export const usePetStore = create<PetState & PetActions>((set) => ({
     try {
       const newPet = await addPet(input);
       set((state) => ({ pets: [...state.pets, newPet] }));
+      return true;
     } catch (e) {
       set({ error: 'ペットの登録に失敗しました' });
+      return false;
     } finally {
       set({ isLoading: false });
     }

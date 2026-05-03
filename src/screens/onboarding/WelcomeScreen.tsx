@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, ViewToken } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, ViewToken, Image, ImageSourcePropType } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -12,25 +12,25 @@ type Slide = {
   id: string;
   title: string;
   description: string;
-  image: string;
+  image: ImageSourcePropType;
 };
 
 const slides: Slide[] = [
   {
     id: '1',
-    image: '🐾',
+    image: require('../../../assets/onboarding/slide1.png'),
     title: 'wanchoへようこそ',
     description: 'ペットとの毎日をもっと豊かに。\nわんちゃんにかかる支出を\nかんたんに記録・管理できます。',
   },
   {
     id: '2',
-    image: '📊',
+    image: require('../../../assets/onboarding/slide2.png'),
     title: '支出を見える化しよう',
     description: '医療費・フード・おやつなど\nカテゴリ別に支出を記録して\n毎月の傾向をチェックできます。',
   },
   {
     id: '3',
-    image: '🎯',
+    image: require('../../../assets/onboarding/slide3.png'),
     title: '積立目標を立てよう',
     description: '将来の医療費に備えて\n毎月の積立目標を設定し\n達成度を確認できます。',
   },
@@ -71,7 +71,7 @@ export default function WelcomeScreen() {
         viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
         renderItem={({ item }) => (
           <View style={styles.slide}>
-            <Text style={styles.image}>{item.image}</Text>
+            <Image source={item.image} style={styles.image} resizeMode="contain" />
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.description}>{item.description}</Text>
           </View>
@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   image: {
-    fontSize: 80,
+    width: width * 0.7,
+    height: width * 0.7 * 1.5,
   },
   title: {
     fontSize: 24,

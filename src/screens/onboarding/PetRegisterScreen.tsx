@@ -24,7 +24,7 @@ const petSchema = z.object({
 type PetSchema = z.infer<typeof petSchema>;
 
 export default function PetRegisterScreen() {
-  const { addPet } = usePetStore();
+  const { addPet, error: petError } = usePetStore();
   const { completeOnboarding } = useOnboardingStore();
 
   // フォームの型をPetSchema型として管理し、バリデーションをzodResolverに委譲。
@@ -57,6 +57,7 @@ export default function PetRegisterScreen() {
 
   const onSubmit = async(data: PetSchema) => {
     await addPet(data);
+    if (petError) return;
     await completeOnboarding();
   };
 

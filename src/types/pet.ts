@@ -10,6 +10,6 @@ export type Pet = {
   updatedAt: string;
 };
 
-export type NewPet = Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>;
+export type NewPet = Pick<Pet, 'name' | 'photoUri'>;
 
 export type UpdatePet = Partial<NewPet>;

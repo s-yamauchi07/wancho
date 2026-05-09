@@ -21,6 +21,7 @@ const wanchoColors = {
   palePink: '#EBC8C6',
   lavender: '#D7D6E2',
   lightGray: '#F2F2F2',
+  white: '#FFFFFF',
 }
 
 export const tamaguiConfig = createTamagui({

@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Text, View } from 'react-native';
-import { TamaguiProvider } from 'tamagui';
+import { TamaguiProvider } from '@tamagui/core'
 import { useFonts } from 'expo-font';
 import { NotoSansJP_400Regular, NotoSansJP_700Bold } from '@expo-google-fonts/noto-sans-jp';
 import { db } from '@/db';

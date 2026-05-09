@@ -1,5 +1,5 @@
 import { createSystemFont, defaultConfig } from '@tamagui/config/v5'
-import { createTamagui } from 'tamagui'
+import { createTamagui } from '@tamagui/core'
 
 const notoSansJP = createSystemFont({
   font: {
@@ -23,6 +23,14 @@ const wanchoColors = {
   lightGray: '#F2F2F2',
   white: '#FFFFFF',
 }
+
+export const fontSizes = {
+  heading1: 20,
+  heading2: 18,
+  body: 14,
+  footnote: 12,
+  caption: 11,
+} as const
 
 export const tamaguiConfig = createTamagui({
   ...defaultConfig,

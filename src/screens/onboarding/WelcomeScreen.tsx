@@ -120,7 +120,7 @@ export default function WelcomeScreen() {
         <Button
           onPress={handleNext}
           backgroundColor="$sage"
-          paddingVertical={14}
+          paddingVertical={10}
           paddingHorizontal={48}
           borderRadius={30}
           pressStyle={{ opacity: 0.8 }}

@@ -4,14 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import * as ImagePicker from 'expo-image-picker'; 
 import { usePetStore } from '@/store/petStore';
-import { 
-  Alert, 
-  Image,
-  TextInput,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { Alert, Image } from 'react-native';
 import { useOnboardingStore } from '@/store/onboardingStore';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { YStack } from '@tamagui/stacks';
@@ -69,7 +62,7 @@ export default function PetRegisterScreen() {
     if (!success) {
       setShowError(true);
       return;
-    };
+    }
     await completeOnboarding();
 
     // navigation.getParent()で1つ上のRootNavigatorのnavigationを取得する。
@@ -108,17 +101,15 @@ export default function PetRegisterScreen() {
         control={control}
         name='photoUri'
         render={({ field: { value, onChange } }) =>
-          <TouchableOpacity 
-            onPress={() => pickImage(onChange)}
-          >
+          <YStack onPress={() => pickImage(onChange)} pressStyle={{ opacity: 0.8 }}>
             {value ? (
-              <Image source={{ uri: value }} style={styles.image}/>
+              <Image source={{ uri: value }} style={{ width: 120, height: 120, borderRadius: 60 }} />
             ) : (
               <YStack alignItems="center" gap="$2">
                 <Avatar circular size="$12">
                   <Avatar.Image src={require('../../../assets/pet-registration/pet_avatar_default.png')} />
                 </Avatar>
-                <SizableText 
+                <SizableText
                   fontSize={fontSizes.body}
                   color="$greige"
                 >
@@ -126,7 +117,7 @@ export default function PetRegisterScreen() {
                 </SizableText>
               </YStack>
             )}
-          </TouchableOpacity>
+          </YStack>
         }
       />
       <YStack>
@@ -183,73 +174,3 @@ export default function PetRegisterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-    gap: 8,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  // imageArea: {
-  //   width: 140,
-  //   height: 140,
-  //   borderRadius: 60,
-  //   backgroundColor: '#f0f0f0',
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  //   overflow: 'hidden',
-  //   marginBottom: 24,
-  // },
-  image: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-  },
-  imagePlaceholder: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  imagePlaceholderIcon: {
-    fontSize: 72,
-  },
-  imagePlaceholderText: {
-    fontSize: 14,
-    color: '#999',
-  },
-  nameInput: {
-    justifyContent: 'flex-start',
-    gap: 8,
-  },
-  inputForm: {
-    width: 200,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ABB5A1',
-  },
-  button: {
-    backgroundColor: '#333',
-    paddingVertical: 14,
-    paddingHorizontal: 48,
-    borderRadius: 30,
-    marginTop: 60
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});

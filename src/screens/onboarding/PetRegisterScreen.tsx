@@ -19,8 +19,8 @@ import { SizableText } from '@tamagui/text';
 import { Avatar } from '@tamagui/avatar';
 import { Button } from '@tamagui/button';
 import { Input } from '@tamagui/input';
-import { AlertDialog } from '@tamagui/alert-dialog';
 import { fontSizes } from 'tamagui.config';
+import ErrorAlertDialog from '@/components/ErrorAlertDialog';
 
 const petSchema = z.object({
   photoUri: z.string().nullable(),
@@ -173,45 +173,12 @@ export default function PetRegisterScreen() {
         </Button.Text>
       </Button>
 
-      <AlertDialog open={showError} onOpenChange={setShowError}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay />
-          <AlertDialog.Content
-            backgroundColor="$ivory"
-            borderRadius={16}
-            padding={24}
-          >
-            <AlertDialog.Title
-              fontSize={fontSizes.heading2}
-              fontWeight="bold"
-              color="$charcoal"
-            >
-              エラーが発生しました
-            </AlertDialog.Title>
-            <AlertDialog.Description
-              fontSize={fontSizes.body}
-              color="$greige"
-            >
-              {error}
-            </AlertDialog.Description>
-            <AlertDialog.Action asChild>
-              <Button
-                backgroundColor="$firebrick"
-                borderRadius={30}
-                paddingHorizontal={32}
-                marginHorizontal={16}
-                marginTop={16}
-                borderWidth={0}
-                onPress={() => setShowError(false)}
-              >
-                <Button.Text color="$white" fontSize={fontSizes.body}>
-                  OK
-                </Button.Text>
-              </Button>
-            </AlertDialog.Action>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
+      <ErrorAlertDialog
+        open={showError}
+        onOpenChange={setShowError}
+        title="エラーが発生しました"
+        description={error}
+      />
     </YStack>
   );
 }

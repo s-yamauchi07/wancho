@@ -2,6 +2,7 @@
 import PetRegisterScreen from '@/screens/onboarding/PetRegisterScreen';
 import WelcomeScreen from '@/screens/onboarding/WelcomeScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { wanchoColors } from '../../tamagui.config';
 
 type OnboardingParamList = {
   Welcome: undefined;
@@ -21,6 +22,8 @@ export default function OnboardingNavigator() {
           headerShown: true,
           title: '',
           headerBackTitle: '戻る',
+          headerStyle: { backgroundColor: wanchoColors.ivory },
+          headerTintColor: wanchoColors.sage,
         }}
       />
     </Stack.Navigator>

@@ -11,7 +11,7 @@ const notoSansJP = createSystemFont({
   },
 })
 
-const wanchoColors = {
+export const wanchoColors = {
   sage: '#ABB5A1',
   sandBeige: '#E7E2DB',
   charcoal: '#333333',

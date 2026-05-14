@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,6 +19,7 @@ import { SizableText } from '@tamagui/text';
 import { Avatar } from '@tamagui/avatar';
 import { Button } from '@tamagui/button';
 import { Input } from '@tamagui/input';
+import { AlertDialog } from '@tamagui/alert-dialog';
 import { fontSizes } from 'tamagui.config';
 
 const petSchema = z.object({
@@ -29,8 +31,9 @@ const petSchema = z.object({
 type PetSchema = z.infer<typeof petSchema>;
 
 export default function PetRegisterScreen() {
-  const { addPet } = usePetStore();
+  const { addPet, error } = usePetStore();
   const { completeOnboarding } = useOnboardingStore();
+  const [showError, setShowError] = useState(false);
   const navigation = useNavigation();
 
   // フォームの型をPetSchema型として管理し、バリデーションをzodResolverに委譲。
@@ -63,7 +66,10 @@ export default function PetRegisterScreen() {
 
   const onSubmit = async(data: PetSchema) => {
     const success = await addPet(data);
-    if (!success) return;
+    if (!success) {
+      setShowError(true);
+      return;
+    };
     await completeOnboarding();
 
     // navigation.getParent()で1つ上のRootNavigatorのnavigationを取得する。
@@ -166,6 +172,46 @@ export default function PetRegisterScreen() {
           登録
         </Button.Text>
       </Button>
+
+      <AlertDialog open={showError} onOpenChange={setShowError}>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay />
+          <AlertDialog.Content
+            backgroundColor="$ivory"
+            borderRadius={16}
+            padding={24}
+          >
+            <AlertDialog.Title
+              fontSize={fontSizes.heading2}
+              fontWeight="bold"
+              color="$charcoal"
+            >
+              エラーが発生しました
+            </AlertDialog.Title>
+            <AlertDialog.Description
+              fontSize={fontSizes.body}
+              color="$greige"
+            >
+              {error}
+            </AlertDialog.Description>
+            <AlertDialog.Action asChild>
+              <Button
+                backgroundColor="$firebrick"
+                borderRadius={30}
+                paddingHorizontal={32}
+                marginHorizontal={16}
+                marginTop={16}
+                borderWidth={0}
+                onPress={() => setShowError(false)}
+              >
+                <Button.Text color="$white" fontSize={fontSizes.body}>
+                  OK
+                </Button.Text>
+              </Button>
+            </AlertDialog.Action>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog>
     </YStack>
   );
 }

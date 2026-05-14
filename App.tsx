@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Text, View } from 'react-native';
 import { TamaguiProvider } from '@tamagui/core'
+import { PortalProvider } from '@tamagui/portal'
 import { useFonts } from 'expo-font';
 import { NotoSansJP_400Regular, NotoSansJP_700Bold } from '@expo-google-fonts/noto-sans-jp';
 import { db } from '@/db';
@@ -34,9 +35,11 @@ export default function App() {
 
   return (
     <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
+      <PortalProvider>
+        <NavigationContainer>
+          <RootNavigator />
+        </NavigationContainer>
+      </PortalProvider>
     </TamaguiProvider>
   );
 }

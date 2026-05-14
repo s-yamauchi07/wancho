@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useOnboardingStore } from '@/store/onboardingStore';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import { YStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
 import { Avatar } from '@tamagui/avatar';
@@ -30,6 +31,7 @@ type PetSchema = z.infer<typeof petSchema>;
 export default function PetRegisterScreen() {
   const { addPet } = usePetStore();
   const { completeOnboarding } = useOnboardingStore();
+  const navigation = useNavigation();
 
   // フォームの型をPetSchema型として管理し、バリデーションをzodResolverに委譲。
   const { control, handleSubmit, formState: { errors } } = useForm<PetSchema>({
@@ -63,6 +65,15 @@ export default function PetRegisterScreen() {
     const success = await addPet(data);
     if (!success) return;
     await completeOnboarding();
+
+    // navigation.getParent()で1つ上のRootNavigatorのnavigationを取得する。
+    // dispatch(CommonActions.reset({...}))で取得できた場合のみRootNavigationに対してアクションを送る。resetすることでonboardingで構築したstackを削除して、再度新規登録画面に戻るのを防ぐ
+    navigation.getParent()?.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'TabNavigator' }], // stackをこの画面だけにする(前の画面に戻れないようにreset)
+      })
+    );
   };
 
   return (

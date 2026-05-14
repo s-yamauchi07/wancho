@@ -22,6 +22,7 @@ const wanchoColors = {
   lavender: '#D7D6E2',
   lightGray: '#F2F2F2',
   white: '#FFFFFF',
+  firebrick: '#b22222'
 }
 
 export const fontSizes = {

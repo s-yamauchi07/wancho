@@ -93,6 +93,7 @@ export default function WelcomeScreen() {
               source={item.image}
               style={{ width: width * 0.7, height: width * 0.7 * 1.5 }}
               resizeMode="contain"
+              accessibilityLabel={item.title}
             />
             <SizableText fontSize={fontSizes.heading1} fontWeight="bold" textAlign="center" color="$charcoal">
               {item.title}

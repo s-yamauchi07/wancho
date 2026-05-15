@@ -12,7 +12,7 @@ import { SizableText } from '@tamagui/text';
 import { Avatar } from '@tamagui/avatar';
 import { Button } from '@tamagui/button';
 import { Input } from '@tamagui/input';
-import { fontSizes } from 'tamagui.config';
+import { fontSizes } from '../../../tamagui.config';
 import ErrorAlertDialog from '@/components/ErrorAlertDialog';
 
 const petSchema = z.object({
@@ -122,7 +122,7 @@ export default function PetRegisterScreen() {
       />
       <YStack>
         <SizableText fontSize={fontSizes.body}>
-          おなまえ(必須)
+          お名前(必須)
         </SizableText>
         <Controller
           control={control}

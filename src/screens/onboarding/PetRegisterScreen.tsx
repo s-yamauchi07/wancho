@@ -1,19 +1,19 @@
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import * as ImagePicker from 'expo-image-picker'; 
 import { usePetStore } from '@/store/petStore';
-import { 
-  Alert, 
-  Image,
-  View,
-  TextInput,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Pressable
-} from 'react-native';
+import { Alert, Image } from 'react-native';
 import { useOnboardingStore } from '@/store/onboardingStore';
+import { useNavigation, CommonActions } from '@react-navigation/native';
+import { YStack } from '@tamagui/stacks';
+import { SizableText } from '@tamagui/text';
+import { Avatar } from '@tamagui/avatar';
+import { Button } from '@tamagui/button';
+import { Input } from '@tamagui/input';
+import { fontSizes } from '../../../tamagui.config';
+import ErrorAlertDialog from '@/components/ErrorAlertDialog';
 
 const petSchema = z.object({
   photoUri: z.string().nullable(),
@@ -24,8 +24,10 @@ const petSchema = z.object({
 type PetSchema = z.infer<typeof petSchema>;
 
 export default function PetRegisterScreen() {
-  const { addPet } = usePetStore();
+  const { addPet, error } = usePetStore();
   const { completeOnboarding } = useOnboardingStore();
+  const [showError, setShowError] = useState(false);
+  const navigation = useNavigation();
 
   // フォームの型をPetSchema型として管理し、バリデーションをzodResolverに委譲。
   const { control, handleSubmit, formState: { errors } } = useForm<PetSchema>({
@@ -57,133 +59,118 @@ export default function PetRegisterScreen() {
 
   const onSubmit = async(data: PetSchema) => {
     const success = await addPet(data);
-    if (!success) return;
+    if (!success) {
+      setShowError(true);
+      return;
+    }
     await completeOnboarding();
+
+    // navigation.getParent()で1つ上のRootNavigatorのnavigationを取得する。
+    // dispatch(CommonActions.reset({...}))で取得できた場合のみRootNavigationに対してアクションを送る。resetすることでonboardingで構築したstackを削除して、再度新規登録画面に戻るのを防ぐ
+    navigation.getParent()?.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'TabNavigator' }], // stackをこの画面だけにする(前の画面に戻れないようにreset)
+      })
+    );
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>わんこの登録をしよう</Text>
-        <Text style={styles.subtitle}>まずは大切な家族のプロフィールを教えてね</Text>
-      </View>
+    <YStack 
+      flex={1}
+      backgroundColor="$ivory"
+      alignItems="center"
+      justifyContent="center"
+      gap="$6"
+      paddingBottom={100}
+    >
+      <YStack alignItems="center">
+        <SizableText 
+          fontSize={fontSizes.heading1}
+          fontWeight="bold"
+        >
+          わんこの登録をしよう
+        </SizableText>
+        <SizableText fontSize={fontSizes.body} color="$greige">
+          大切な家族のプロフィールを教えてください
+        </SizableText>
+      </YStack>
       {/* Controllerを使って値を検知。renderの引数のfieldはuseControllerPropsの値。value=現在の入力されている値 */}
       {/* NOTE: https://react-hook-form.com/docs/usecontroller */}
       <Controller
         control={control}
         name='photoUri'
         render={({ field: { value, onChange } }) =>
-          <TouchableOpacity style={styles.imageArea} onPress={() => pickImage(onChange)}>
+          <YStack onPress={() => pickImage(onChange)} pressStyle={{ opacity: 0.8 }}>
             {value ? (
-              <Image source={{ uri: value }} style={styles.image} />
+              <Image source={{ uri: value }} style={{ width: 120, height: 120, borderRadius: 60 }} />
             ) : (
-              <View style={styles.imagePlaceholder}>
-                <Text style={styles.imagePlaceholderIcon}>🐾</Text>
-                <Text style={styles.imagePlaceholderText}>写真を選ぶ</Text>
-              </View>
+              <YStack alignItems="center" gap="$2">
+                <Avatar circular size="$12">
+                  <Avatar.Image src={require('../../../assets/pet-registration/pet_avatar_default.png')} />
+                </Avatar>
+                <SizableText
+                  fontSize={fontSizes.body}
+                  color="$greige"
+                >
+                  写真を選ぶ
+                </SizableText>
+              </YStack>
             )}
-          </TouchableOpacity>
+          </YStack>
         }
       />
-      <View style={styles.nameInput}>
-        <Text>おなまえ(必須)</Text>
+      <YStack>
+        <SizableText fontSize={fontSizes.body}>
+          お名前(必須)
+        </SizableText>
         <Controller
           control={control}
           name='name'
           render={({ field: { onChange, value } }) =>
-            <>
-              <TextInput
-                onChangeText={onChange}
-                value={value}
-                placeholder='ぽち'
-                style={styles.inputForm}
-              />
-            </>
+            <Input
+              unstyled
+              onChangeText={onChange}
+              value={value}
+              placeholder="例: ぽち"
+              width={200}
+              fontSize={fontSizes.heading2}
+              paddingVertical={12}
+              marginBottom={4}
+              borderBottomWidth={1}
+              borderBottomColor="$sage"
+            />
           }
         />
-        {errors.name && <Text>お名前は必須です</Text>}
-      </View>
+        {errors.name && <SizableText fontSize={fontSizes.footnote} color="$firebrick">お名前は必須です</SizableText>}
+      </YStack>
       {/* ボタンエリア */}
-      <Pressable 
+      <Button
         onPress={handleSubmit(onSubmit)}
         disabled={!!errors.name}
-        style={styles.button}
+        backgroundColor="$sage"
+        paddingVertical={10}
+        paddingHorizontal={48}
+        borderRadius={30}
+        pressStyle={{ opacity: 0.8 }}
+        borderWidth={0}
       >
-        <Text style={styles.buttonText}>登録</Text>
-      </Pressable>
-    </View>
+        <Button.Text 
+          color="$white"
+          fontSize={fontSizes.body}
+          fontWeight="bold"
+        >
+          登録
+        </Button.Text>
+      </Button>
 
+      <ErrorAlertDialog
+        open={showError}
+        onOpenChange={setShowError}
+        title="エラーが発生しました"
+        description={error}
+      />
+    </YStack>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-    gap: 8,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  imageArea: {
-    width: 140,
-    height: 140,
-    borderRadius: 60,
-    backgroundColor: '#f0f0f0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    marginBottom: 24,
-  },
-  image: {
-    width: 140,
-    height: 140,
-    borderRadius: 60,
-  },
-  imagePlaceholder: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  imagePlaceholderIcon: {
-    fontSize: 72,
-  },
-  imagePlaceholderText: {
-    fontSize: 14,
-    color: '#999',
-  },
-  nameInput: {
-    justifyContent: 'flex-start',
-    gap: 8,
-  },
-  inputForm: {
-    width: 200,
-    paddingVertical: 14,
-    paddingHorizontal: 48,
-    borderWidth:1,
-    borderRadius: 10,
-  },
-  button: {
-    backgroundColor: '#333',
-    paddingVertical: 14,
-    paddingHorizontal: 48,
-    borderRadius: 30,
-    marginTop: 60
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});

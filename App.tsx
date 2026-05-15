@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Text, View } from 'react-native';
@@ -9,19 +10,40 @@ import { db } from '@/db';
 import migrations from '@/db/migrations/migrations';
 import RootNavigator from '@/navigation/RootNavigator';
 import tamaguiConfig from './tamagui.config';
+import ErrorAlertDialog from '@/components/ErrorAlertDialog';
 
 export default function App() {
   const { success, error } = useMigrations(db, migrations);
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     NotoSansJP_400Regular,
     NotoSansJP_700Bold,
   });
+  const [fontErrorOpen, setFontErrorOpen] = useState(false);
+
+  useEffect(() => {
+    if (fontError) setFontErrorOpen(true);
+  }, [fontError]);
 
   if (error) {
     return (
       <View>
         <Text>Migration error: {error.message}</Text>
       </View>
+    );
+  }
+
+  if (fontError) {
+    return (
+      <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+        <PortalProvider>
+          <ErrorAlertDialog
+            open={fontErrorOpen}
+            onOpenChange={setFontErrorOpen}
+            title="エラーが発生しました"
+            description={fontError.message ?? null}
+          />
+        </PortalProvider>
+      </TamaguiProvider>
     );
   }
 

@@ -26,6 +26,8 @@ export const wanchoColors = {
 }
 
 export const fontSizes = {
+  display: 28,
+  title: 24,
   heading1: 20,
   heading2: 18,
   body: 14,

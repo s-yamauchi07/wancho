@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import CategoryGrid from '@/components/record/CategoryGrid';
 import { CATEGORIES } from '../../constants/categories';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 type Props = {
   visible: boolean;
@@ -16,9 +17,10 @@ type Props = {
 
 export default function ExpenseFormModal({ visible, onClose }: Props) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(new Date());
   const [amount, setAmount] = useState('');
   const [memo, setMemo] = useState('');
+  const [show, setShow] = useState(false);
 
   // TODO: React Hook Form + Zod でバリデーションを追加する
   // TODO: 保存時に useExpenseStore().addExpense() を呼ぶ
@@ -27,9 +29,9 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
     onClose();
   };
 
-  // TODO: @react-native-community/datetimepicker を使った日付選択に切り替える
-  const handleDatePress = () => {
-    console.log('日付ピッカーを開く');
+  const pickDate = (selectedDate?: Date) => {
+    if (selectedDate) setDate(selectedDate);
+    setShow(false);
   };
 
   return (
@@ -79,8 +81,16 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
                 <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
                   日付
                 </SizableText>
-                {/* TODO: Pressable → DateTimePicker を開く実装に切り替える */}
-                <Pressable onPress={handleDatePress}>
+                {/* TODO: 日付選択の実装 */}
+                {show && 
+                  <RNDateTimePicker
+                    value={date}
+                    display="inline"
+                    locale="jp"
+                    onChange={(_, selectedDate) => pickDate(selectedDate)}
+                  />
+                }
+                <Pressable onPress={() => setShow(true)}>
                   <XStack
                     backgroundColor="$white"
                     borderRadius={8}
@@ -88,8 +98,8 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
                     alignItems="center"
                     justifyContent="space-between"
                   >
-                    <SizableText fontSize={fontSizes.body} color={date ? '$charcoal' : '$greige'}>
-                      {date || 'YYYY/MM/DD'}
+                    <SizableText fontSize={fontSizes.body} color="$charcoal">
+                      {`${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`}
                     </SizableText>
                     <Ionicons name="calendar-outline" size={20} color={wanchoColors.greige} />
                   </XStack>

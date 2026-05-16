@@ -3,8 +3,9 @@ import { FlatList, Pressable, StyleSheet } from 'react-native';
 import { YStack, XStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
 import { Button } from '@tamagui/button';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import { FontAwesome6 } from '@expo/vector-icons';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
+import ExpenseFormModal from './ExpenseFormModal';
 
 type DummyExpense = {
   id: number;
@@ -113,13 +114,13 @@ export default function RecordScreen() {
         alignItems="center"
       >
         <Pressable onPress={() => setSelectedMonth(shiftMonth(selectedMonth, -1))}>
-          <AntDesign name="arrow-left" size={24} color={wanchoColors.charcoal} />
+          <FontAwesome6 name="arrow-left" size={24} color={wanchoColors.charcoal} />
         </Pressable>
         <SizableText fontSize={fontSizes.heading1} fontWeight="bold" color="$charcoal">
           {formatMonth(selectedMonth)}
         </SizableText>
         <Pressable onPress={() => setSelectedMonth(shiftMonth(selectedMonth, 1))}>
-          <AntDesign name="arrow-right"size={24} color={wanchoColors.charcoal} />
+          <FontAwesome6 name="arrow-right"size={24} color={wanchoColors.charcoal} />
         </Pressable>
       </XStack>
 
@@ -193,8 +194,14 @@ export default function RecordScreen() {
         pressStyle={{ opacity: 0.8 }}
         onPress={() => setModalVisible(true)}
       >
-        <AntDesign name="plus" size={20} color={wanchoColors.white} />
+        <FontAwesome6 name="add" size={22} color={wanchoColors.white} />
       </Button>
+
+      {/* 支出追加モーダル */}
+      <ExpenseFormModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </YStack>
   );
 }

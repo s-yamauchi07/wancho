@@ -1,17 +1,207 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { FlatList, Pressable, StyleSheet } from 'react-native';
+import { YStack, XStack } from '@tamagui/stacks';
+import { SizableText } from '@tamagui/text';
+import { Button } from '@tamagui/button';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { fontSizes, wanchoColors } from '../../../tamagui.config';
+
+type DummyExpense = {
+  id: number;
+  categoryName: string;
+  amount: number;
+  date: string;
+  memo: string | null;
+};
+
+const DUMMY_EXPENSES: DummyExpense[] = [
+  { id: 1, categoryName: 'フード', amount: 3500, date: '2026-05-10', memo: 'ドッグフード' },
+  { id: 2, categoryName: '医療費', amount: 8000, date: '2026-05-05', memo: 'ワクチン接種' },
+  { id: 3, categoryName: 'おやつ', amount: 1200, date: '2026-05-01', memo: null },
+];
+
+function formatMonth(yearMonth: string): string {
+  const [year, month] = yearMonth.split('-').map(Number);
+  return `${year}年${month}月`;
+}
+
+function shiftMonth(yearMonth: string, delta: number): string {
+  const [year, month] = yearMonth.split('-').map(Number);
+  const d = new Date(year, month - 1 + delta, 1);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  return `${y}-${m}`;
+}
+
+function formatDate(dateStr: string): string {
+  const [, month, day] = dateStr.split('-');
+  return `${Number(month)}/${Number(day)}`;
+}
+
+function formatAmount(amount: number): string {
+  return `¥${amount.toLocaleString()}`;
+}
 
 export default function RecordScreen() {
+  const today = new Date();
+  const initialMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const expenses = DUMMY_EXPENSES;
+  const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+
+  const renderExpenseItem = ({ item }: { item: DummyExpense }) => (
+    <Pressable onPress={() => {}}>
+      <XStack
+        paddingVertical={12}
+        paddingHorizontal={16}
+        backgroundColor="$white"
+        borderRadius={12}
+        marginBottom={8}
+        alignItems="center"
+        gap={12}
+      >
+        {/* カテゴリアイコン（仮: 丸背景） */}
+        <YStack
+          width={40}
+          height={40}
+          borderRadius={20}
+          backgroundColor="$sage"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <SizableText fontSize={fontSizes.caption} color="$white">
+            {item.categoryName[0]}
+          </SizableText>
+        </YStack>
+
+        {/* カテゴリ名・メモ */}
+        <YStack flex={1}>
+          <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+            {item.categoryName}
+          </SizableText>
+          <XStack gap={4}>
+            <SizableText fontSize={fontSizes.caption} color="$greige">
+              {formatDate(item.date)}
+            </SizableText>
+            {item.memo && (
+              <SizableText fontSize={fontSizes.caption} color="$greige">
+                {item.memo}
+              </SizableText>
+            )}
+          </XStack>
+        </YStack>
+
+        {/* 金額・日付 */}
+        <YStack alignItems="flex-end">
+          <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+            {formatAmount(item.amount)}
+          </SizableText>
+        </YStack>
+      </XStack>
+    </Pressable>
+  );
+
   return (
-    <View style={styles.container}>
-      <Text>記録</Text>
-    </View>
+    <YStack flex={1} backgroundColor="$ivory">
+      {/* 月切り替え */}
+      <XStack
+        paddingHorizontal={24}
+        paddingVertical={16}
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Pressable onPress={() => setSelectedMonth(shiftMonth(selectedMonth, -1))}>
+          <AntDesign name="arrow-left" size={24} color={wanchoColors.charcoal} />
+        </Pressable>
+        <SizableText fontSize={fontSizes.heading1} fontWeight="bold" color="$charcoal">
+          {formatMonth(selectedMonth)}
+        </SizableText>
+        <Pressable onPress={() => setSelectedMonth(shiftMonth(selectedMonth, 1))}>
+          <AntDesign name="arrow-right"size={24} color={wanchoColors.charcoal} />
+        </Pressable>
+      </XStack>
+
+      {/* 合計金額 */}
+      <YStack
+        marginHorizontal={16}
+        padding={16}
+        backgroundColor="$white"
+        borderRadius={12}
+        marginBottom={24}
+        gap={4}
+      >
+        <SizableText fontSize={fontSizes.footnote} color="$greige">
+          今月の合計
+        </SizableText>
+        <SizableText 
+          fontSize={fontSizes.display}
+          lineHeight={fontSizes.display * 1.5}
+          fontWeight="bold"
+          color="$charcoal"
+        >
+          {formatAmount(totalAmount)}
+        </SizableText>
+      </YStack>
+
+      {/* 最近の支出・全て見る */}
+      <XStack 
+        justifyContent="space-between" 
+        paddingHorizontal={16} 
+        marginBottom={8}
+      >
+        <SizableText
+          fontSize={fontSizes.title}
+          lineHeight={fontSizes.title * 1.5}
+          color="$charcoal"
+        >
+          最近の支出
+        </SizableText>
+        <Pressable onPress={() => {}}>
+          <SizableText fontSize={fontSizes.footnote} color="$sage" fontWeight="bold">
+            全て見る →
+          </SizableText>
+        </Pressable>
+      </XStack>
+
+      {/* 支出一覧 */}
+      <FlatList
+        data={expenses}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={renderExpenseItem}
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <YStack flex={1} alignItems="center" justifyContent="center" paddingTop={60}>
+            <SizableText fontSize={fontSizes.body} color="$greige">
+              記録がありません
+            </SizableText>
+          </YStack>
+        }
+      />
+
+      {/* FAB */}
+      <Button
+        position="absolute"
+        bottom={24}
+        right={24}
+        width={56}
+        height={56}
+        borderRadius={28}
+        backgroundColor="$sage"
+        borderWidth={0}
+        pressStyle={{ opacity: 0.8 }}
+        onPress={() => setModalVisible(true)}
+      >
+        <AntDesign name="plus" size={20} color={wanchoColors.white} />
+      </Button>
+    </YStack>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  listContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 96,
   },
 });

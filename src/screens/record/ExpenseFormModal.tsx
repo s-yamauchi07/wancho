@@ -1,5 +1,9 @@
+import { Modal, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useState } from 'react';
-import { Modal, SafeAreaView, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { YStack, XStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
 import { Button } from '@tamagui/button';
@@ -10,28 +14,36 @@ import { CATEGORIES } from '../../constants/categories';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
-type Props = {
+type Props = {  
   visible: boolean;
   onClose: () => void;
 };
 
+const expenseSchema = z.object({
+  category_id: z.int(),
+  amount: z.int().min(1, '0円以上入力してください'),
+  date: z.date(),
+  memo: z.string().nullable()
+})
+
+type ExpenseSchema = z.infer<typeof expenseSchema>;
+
 export default function ExpenseFormModal({ visible, onClose }: Props) {
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-  const [date, setDate] = useState(new Date());
-  const [amount, setAmount] = useState('');
-  const [memo, setMemo] = useState('');
   const [show, setShow] = useState(false);
 
   // TODO: React Hook Form + Zod でバリデーションを追加する
+  const { control, handleSubmit, formState: { errors } } = useForm<ExpenseSchema>({
+    resolver: zodResolver(expenseSchema),
+    defaultValues: {
+      date: new Date(),
+      memo: null,
+    }
+  })
+  console.log('Errors:', errors)
   // TODO: 保存時に useExpenseStore().addExpense() を呼ぶ
-  const handleSubmit = () => {
-    console.log({ selectedCategoryId, date, amount, memo });
-    onClose();
-  };
-
-  const pickDate = (selectedDate?: Date) => {
-    if (selectedDate) setDate(selectedDate);
-    setShow(false);
+  const onSubmit = (data) => {
+    console.log(`data:`,data);
+    // onClose();
   };
 
   return (
@@ -65,45 +77,74 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
             <YStack gap={24}>
 
               {/* カテゴリ選択 */}
-              <YStack gap={8}>
-                <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-                  カテゴリ
+              <Controller
+                control={control}
+                name="category_id"
+                render={({ field: { value, onChange }}) => 
+                <YStack gap={8}>
+                  <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+                    カテゴリ
+                  </SizableText>
+                  <CategoryGrid
+                    categories={CATEGORIES}
+                    selectedCategoryId={value ?? null}
+                    onSelect={onChange}
+                  />
+                </YStack>
+                } 
+              />
+              <YStack>
+              {errors.category_id && 
+                <SizableText fontSize={fontSizes.footnote} color="$firebrick">
+                  カテゴリを選択してください
                 </SizableText>
-                <CategoryGrid
-                  categories={CATEGORIES}
-                  selectedCategoryId={selectedCategoryId}
-                  onSelect={setSelectedCategoryId}
-                />
+              }
               </YStack>
 
               {/* 日付 */}
-              <YStack gap={8}>
-                <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-                  日付
-                </SizableText>
-                {/* TODO: 日付選択の実装 */}
-                {show && 
-                  <RNDateTimePicker
-                    value={date}
-                    display="inline"
-                    locale="jp"
-                    onChange={(_, selectedDate) => pickDate(selectedDate)}
-                  />
-                }
-                <Pressable onPress={() => setShow(true)}>
-                  <XStack
-                    backgroundColor="$white"
-                    borderRadius={8}
-                    padding={12}
-                    alignItems="center"
-                    justifyContent="space-between"
-                  >
-                    <SizableText fontSize={fontSizes.body} color="$charcoal">
-                      {`${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`}
+              <Controller
+                control={control}
+                name="date"
+                render={({ field: {value, onChange}}) => 
+                  <YStack gap={8}>
+                    <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+                      日付
                     </SizableText>
-                    <Ionicons name="calendar-outline" size={20} color={wanchoColors.greige} />
-                  </XStack>
-                </Pressable>
+                    {/* TODO: 日付選択の実装 */}
+                    {show &&
+                      <RNDateTimePicker
+                        value={value}
+                        display="inline"
+                        locale="jp"
+                        onChange={(_, selectedDate) => {
+                          if (selectedDate) onChange(selectedDate);
+                          setShow(false);
+                        }}
+                      />
+                    }
+                    <Pressable onPress={() => setShow(true)}>
+                      <XStack
+                        backgroundColor="$white"
+                        borderRadius={8}
+                        padding={12}
+                        alignItems="center"
+                        justifyContent="space-between"
+                      >
+                        <SizableText fontSize={fontSizes.body} color="$charcoal">
+                          {`${value.getFullYear()}/${String(value.getMonth() + 1).padStart(2, '0')}/${String(value.getDate()).padStart(2, '0')}`}
+                        </SizableText>
+                        <Ionicons name="calendar-outline" size={20} color={wanchoColors.greige} />
+                      </XStack>
+                    </Pressable>
+                  </YStack>
+                }
+              />
+              <YStack>
+              {errors.date && 
+                <SizableText fontSize={fontSizes.footnote} color="$firebrick">
+                  日付を選択してください
+                </SizableText>
+              }
               </YStack>
 
               {/* 金額 */}
@@ -118,22 +159,34 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
                   alignItems="center"
                   gap={4}
                 >
-                  {/* TODO: バリデーション（数字のみ・必須）を追加する */}
-                  <Input
-                    flex={1}
-                    unstyled
-                    placeholder="0"
-                    keyboardType="numeric"
-                    value={amount}
-                    onChangeText={setAmount}
-                    fontSize={fontSizes.body}
-                    color="$charcoal"
-                    paddingVertical={12}
+                  <Controller 
+                    control={control}
+                    name="amount"
+                    render={({ field: { onChange, value }}) => 
+                      <Input
+                        flex={1}
+                        unstyled
+                        placeholder="0"
+                        keyboardType="numeric"
+                        value={value != null ? String(value) : ''}
+                        onChangeText={(text) => onChange(text === '' ? undefined : parseInt(text, 10))}
+                        fontSize={fontSizes.body}
+                        color="$charcoal"
+                        paddingVertical={12}
+                      />
+                    }
                   />
                   <SizableText fontSize={fontSizes.body} color="$greige">
                     円
                   </SizableText>
                 </XStack>
+              </YStack>
+              <YStack>
+              {errors.amount && 
+                <SizableText fontSize={fontSizes.footnote} color="$firebrick">
+                  金額を入力してください。
+                </SizableText>
+              }
               </YStack>
 
               {/* メモ */}
@@ -141,21 +194,26 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
                 <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
                   メモ（任意）
                 </SizableText>
-                <Input
-                  unstyled
-                  placeholder="メモを入力"
-                  value={memo}
-                  onChangeText={setMemo}
-                  fontSize={fontSizes.body}
-                  color="$charcoal"
-                  backgroundColor="$white"
-                  borderRadius={8}
-                  padding={12}
-                  multiline
-                  numberOfLines={3}
+                <Controller 
+                  control={control}
+                  name="memo"
+                  render={({ field: { onChange, value }}) => 
+                    <Input
+                      unstyled
+                      placeholder="メモを入力"
+                      value={value ?? ''} 
+                      onChangeText={onChange}
+                      fontSize={fontSizes.body}
+                      color="$charcoal"
+                      backgroundColor="$white"
+                      borderRadius={8}
+                      padding={12}
+                      multiline
+                      numberOfLines={3}
+                    />
+                  }
                 />
               </YStack>
-
             </YStack>
           </ScrollView>
 
@@ -167,7 +225,7 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
               borderRadius={30}
               borderWidth={0}
               pressStyle={{ opacity: 0.8 }}
-              onPress={handleSubmit}
+              onPress={handleSubmit(onSubmit)}
             >
               <Button.Text fontSize={fontSizes.body} color="$white" fontWeight="bold">
                 保存

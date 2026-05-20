@@ -13,6 +13,9 @@ import CategoryGrid from '@/components/record/CategoryGrid';
 import { CATEGORIES } from '../../constants/categories';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { usePetStore } from '@/store/petStore';
+import { useExpenseStore } from '@/store/expenseStore';
+import ErrorAlertDialog from '@/components/ErrorAlertDialog';
 
 type Props = {  
   visible: boolean;
@@ -20,7 +23,7 @@ type Props = {
 };
 
 const expenseSchema = z.object({
-  category_id: z.int(),
+  categoryId: z.int(),
   amount: z.int().min(1, '0円以上入力してください'),
   date: z.date(),
   memo: z.string().nullable()
@@ -30,20 +33,37 @@ type ExpenseSchema = z.infer<typeof expenseSchema>;
 
 export default function ExpenseFormModal({ visible, onClose }: Props) {
   const [show, setShow] = useState(false);
+  const pets = usePetStore((state) => state.pets);
+  const { addExpense, isLoading, error } = useExpenseStore();
+  const [showError, setShowError] = useState(false);
 
-  // TODO: React Hook Form + Zod でバリデーションを追加する
-  const { control, handleSubmit, formState: { errors } } = useForm<ExpenseSchema>({
+  const { control, handleSubmit, formState: { errors }, reset } = useForm<ExpenseSchema>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
+      categoryId: undefined,
       date: new Date(),
       memo: null,
     }
-  })
-  console.log('Errors:', errors)
-  // TODO: 保存時に useExpenseStore().addExpense() を呼ぶ
-  const onSubmit = (data) => {
-    console.log(`data:`,data);
-    // onClose();
+  });
+
+  const onSubmit = async (data: ExpenseSchema) => {
+    const petId = pets[0]?.id;
+    if(!petId) {
+      setShowError(true);
+      return;
+    }
+    await addExpense({
+      ...data,
+      date: data.date.toISOString().split('T')[0],
+      petId: petId
+    })
+    const { error: storeError } = useExpenseStore.getState();
+    if (storeError) {
+      setShowError(true);
+      return;
+    }
+    reset();
+    onClose();
   };
 
   return (
@@ -79,7 +99,7 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
               {/* カテゴリ選択 */}
               <Controller
                 control={control}
-                name="category_id"
+                name="categoryId"
                 render={({ field: { value, onChange }}) => 
                 <YStack gap={8}>
                   <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
@@ -94,7 +114,7 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
                 } 
               />
               <YStack>
-              {errors.category_id && 
+              {errors.categoryId && 
                 <SizableText fontSize={fontSizes.footnote} color="$firebrick">
                   カテゴリを選択してください
                 </SizableText>
@@ -226,13 +246,19 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
               borderWidth={0}
               pressStyle={{ opacity: 0.8 }}
               onPress={handleSubmit(onSubmit)}
+              disabled={isLoading === true}
             >
               <Button.Text fontSize={fontSizes.body} color="$white" fontWeight="bold">
-                保存
+                {isLoading ? "保存中..." : "保存" }
               </Button.Text>
             </Button>
           </YStack>
-
+          <ErrorAlertDialog
+            open={showError}
+            onOpenChange={setShowError}
+            title="エラーが発生しました"
+            description={error}
+          />
         </YStack>
       </SafeAreaView>
     </Modal>

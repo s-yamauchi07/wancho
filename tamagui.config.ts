@@ -13,13 +13,16 @@ const notoSansJP = createSystemFont({
 
 export const wanchoColors = {
   sage: '#ABB5A1',
+  mint: '#A8C5BB',
   sandBeige: '#E7E2DB',
+  camel: '#C4A882',
   charcoal: '#333333',
   greige: '#6F6F6F',
   ivory: '#FAFAF7',
   paleBlue: '#A7BBC9',
   palePink: '#EBC8C6',
   lavender: '#D7D6E2',
+  mauve: '#C4B5C4',
   lightGray: '#F2F2F2',
   white: '#FFFFFF',
   firebrick: '#b22222'

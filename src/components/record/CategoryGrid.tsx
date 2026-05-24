@@ -3,38 +3,12 @@ import { YStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
-
-type Category = {
-  id: number;
-  name: string;
-};
+import { Category } from '@/types/categories';
 
 type Props = {
   categories: Category[];
   selectedCategoryId: number | null;
   onSelect: (id: number) => void;
-};
-
-type CategoryStyle = {
-  icon: keyof typeof FontAwesome6.glyphMap;
-  color: string;
-};
-
-const CATEGORY_STYLE_MAP: Record<string, CategoryStyle> = {
-  フード:       { icon: 'bowl-food',       color: wanchoColors.sage },
-  おやつ:       { icon: 'bone',              color: wanchoColors.sandBeige },
-  医療費:       { icon: 'hospital',           color: wanchoColors.palePink },
-  トリミング:   { icon: 'scissors',             color: wanchoColors.lavender },
-  ペット保険:   { icon: 'shield-dog',  color: wanchoColors.paleBlue },
-  おもちゃ: { icon: 'soccer-ball',           color: wanchoColors.lavender },
-  日用品:       { icon: 'shirt',        color: wanchoColors.sandBeige },
-  ペットホテル: { icon: 'home',              color: wanchoColors.paleBlue },
-  その他:       { icon: 'ellipsis', color: wanchoColors.lightGray },
-};
-
-const DEFAULT_STYLE: CategoryStyle = {
-  icon: 'help-circle-outline',
-  color: wanchoColors.lightGray,
 };
 
 export default function CategoryGrid({ categories, selectedCategoryId, onSelect }: Props) {
@@ -45,7 +19,6 @@ export default function CategoryGrid({ categories, selectedCategoryId, onSelect 
       numColumns={3}
       scrollEnabled={false}
       renderItem={({ item }) => {
-        const style = CATEGORY_STYLE_MAP[item.name] ?? DEFAULT_STYLE;
         const isSelected = item.id === selectedCategoryId;
 
         return (
@@ -66,11 +39,11 @@ export default function CategoryGrid({ categories, selectedCategoryId, onSelect 
                 width={44}
                 height={44}
                 borderRadius={22}
-                backgroundColor={style.color}
+                backgroundColor={item.bgColor}
                 alignItems="center"
                 justifyContent="center"
               >
-                <FontAwesome6 name={style.icon} size={22} color={wanchoColors.white} />
+                <FontAwesome6 name={item.icon as keyof typeof FontAwesome6.glyphMap} size={22} color={wanchoColors.greige} />
               </YStack>
               <SizableText
                 fontSize={fontSizes.caption}

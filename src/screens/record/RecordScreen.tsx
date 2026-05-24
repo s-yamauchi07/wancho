@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet } from 'react-native';
 import { YStack, XStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
@@ -6,20 +6,9 @@ import { Button } from '@tamagui/button';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
 import ExpenseFormModal from './ExpenseFormModal';
-
-type DummyExpense = {
-  id: number;
-  categoryName: string;
-  amount: number;
-  date: string;
-  memo: string | null;
-};
-
-const DUMMY_EXPENSES: DummyExpense[] = [
-  { id: 1, categoryName: 'フード', amount: 3500, date: '2026-05-10', memo: 'ドッグフード' },
-  { id: 2, categoryName: '医療費', amount: 8000, date: '2026-05-05', memo: 'ワクチン接種' },
-  { id: 3, categoryName: 'おやつ', amount: 1200, date: '2026-05-01', memo: null },
-];
+import { useExpenseStore } from '@/store/expenseStore';
+import { Expense } from '@/types/expense';
+import { CATEGORIES } from '@/constants/categories';
 
 function formatMonth(yearMonth: string): string {
   const [year, month] = yearMonth.split('-').map(Number);
@@ -43,66 +32,78 @@ function formatAmount(amount: number): string {
   return `¥${amount.toLocaleString()}`;
 }
 
+
 export default function RecordScreen() {
-  const today = new Date();
-  const initialMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
   const [modalVisible, setModalVisible] = useState(false);
-
-  const expenses = DUMMY_EXPENSES;
+  const { 
+    fetchExpensesByMonth,
+    monthlyExpenses, 
+    selectedMonth, 
+    setSelectedMonth 
+  } = useExpenseStore();
+  
+  const expenses = monthlyExpenses;
+  console.log(expenses)
   const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+  
+  useEffect(() => {
+    fetchExpensesByMonth(selectedMonth);
+  }, [selectedMonth]);
 
-  const renderExpenseItem = ({ item }: { item: DummyExpense }) => (
-    <Pressable onPress={() => {}}>
-      <XStack
-        paddingVertical={12}
-        paddingHorizontal={16}
-        backgroundColor="$white"
-        borderRadius={12}
-        marginBottom={8}
-        alignItems="center"
-        gap={12}
-      >
-        {/* カテゴリアイコン（仮: 丸背景） */}
-        <YStack
-          width={40}
-          height={40}
-          borderRadius={20}
-          backgroundColor="$sage"
+  const renderExpenseItem = ({ item }: { item: Expense }) => {
+    const category = CATEGORIES.find((c) => c.id === item.categoryId)
+    return (
+      <Pressable onPress={() => {}}>
+        <XStack
+          paddingVertical={12}
+          paddingHorizontal={16}
+          backgroundColor="$white"
+          borderRadius={12}
+          marginBottom={8}
           alignItems="center"
-          justifyContent="center"
+          gap={12}
         >
-          <SizableText fontSize={fontSizes.caption} color="$white">
-            {item.categoryName[0]}
-          </SizableText>
-        </YStack>
-
-        {/* カテゴリ名・メモ */}
-        <YStack flex={1}>
-          <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-            {item.categoryName}
-          </SizableText>
-          <XStack gap={4}>
-            <SizableText fontSize={fontSizes.caption} color="$greige">
-              {formatDate(item.date)}
+          {/* カテゴリアイコン（仮: 丸背景） */}
+          <YStack
+            width={40}
+            height={40}
+            borderRadius={20}
+            backgroundColor={category?.bgColor}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <SizableText fontSize={fontSizes.caption} color="$white">
+              <FontAwesome6 name={category?.icon} size={20} />
             </SizableText>
-            {item.memo && (
-              <SizableText fontSize={fontSizes.caption} color="$greige">
-                {item.memo}
-              </SizableText>
-            )}
-          </XStack>
-        </YStack>
+          </YStack>
 
-        {/* 金額・日付 */}
-        <YStack alignItems="flex-end">
-          <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-            {formatAmount(item.amount)}
-          </SizableText>
-        </YStack>
-      </XStack>
-    </Pressable>
-  );
+          {/* カテゴリ名・メモ */}
+          <YStack flex={1}>
+            <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+              {category?.name}
+            </SizableText>
+            <XStack gap={4}>
+              <SizableText fontSize={fontSizes.caption} color="$greige">
+                {formatDate(item.date)}
+              </SizableText>
+              {item.memo && (
+                <SizableText fontSize={fontSizes.caption} color="$greige">
+                  {item.memo}
+                </SizableText>
+              )}
+            </XStack>
+          </YStack>
+
+          {/* 金額・日付 */}
+          <YStack alignItems="flex-end">
+            <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+              {formatAmount(item.amount)}
+            </SizableText>
+          </YStack>
+        </XStack>
+      </Pressable>
+    )
+  };
 
   return (
     <YStack flex={1} backgroundColor="$ivory">

@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, like } from 'drizzle-orm';
 import { expenses } from '@/db/schema';
 import { db } from '@/db';
 import { NewExpense, UpdateExpense } from '@/types/expense';
@@ -6,6 +6,11 @@ import { NewExpense, UpdateExpense } from '@/types/expense';
 export const getExpenses = async () => {
   return await db.select().from(expenses);
 };
+
+// 1ヶ月ごとの費用抽出
+export const getExpensesByMonth = async (yearMonth: string) => {
+  return await db.select().from(expenses).where(like(expenses.date, `${yearMonth}-%`));
+}
 
 export const addExpense = async (input: NewExpense) => {
   const result = await db.insert(expenses).values(input).returning();

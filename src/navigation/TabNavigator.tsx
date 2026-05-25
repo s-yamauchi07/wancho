@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '@/screens/home/HomeScreen';
-import RecordScreen from '@/screens/record/RecordScreen';
 import PlannerScreen from '@/screens/planner/PlannerScreen';
 import ReportScreen from '@/screens/report/ReportScreen';
 import SettingsScreen from '@/screens/settings/SettingsScreen';
+import RecordNavigator from './RecordNavigator';
 
 type TabParamList = {
   Home: undefined;
@@ -27,7 +27,7 @@ export default function TabNavigator() {
       />
       <Tab.Screen 
         name="Record"
-        component={RecordScreen} 
+        component={RecordNavigator} 
         options={{
           title: '記録',
         }}

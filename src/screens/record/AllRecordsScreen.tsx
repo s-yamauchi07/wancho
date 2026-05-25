@@ -1,4 +1,4 @@
-import { SectionList, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { SectionList, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { YStack, XStack } from '@tamagui/stacks';
@@ -108,12 +108,7 @@ export default function AllRecordsScreen() {
       <YStack flex={1} backgroundColor="$ivory">
 
         {/* カテゴリフィルタータグ */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.tagContainer}
-          style={{ flexGrow: 0 }}
-        >
+        <XStack flexWrap="wrap" paddingHorizontal={16} paddingVertical={12} gap={8}>
           <Pressable onPress={() => setSelectedCategoryId(null)}>
             <YStack
               paddingHorizontal={14}
@@ -122,7 +117,6 @@ export default function AllRecordsScreen() {
               borderWidth={1}
               borderColor={selectedCategoryId === null ? '$sage' : '$lightGray'}
               backgroundColor={selectedCategoryId === null ? '$sage' : '$white'}
-              marginRight={8}
             >
               <SizableText
                 fontSize={fontSizes.caption}
@@ -142,7 +136,6 @@ export default function AllRecordsScreen() {
                 borderWidth={1}
                 borderColor={selectedCategoryId === category.id ? '$sage' : '$lightGray'}
                 backgroundColor={selectedCategoryId === category.id ? '$sage' : '$white'}
-                marginRight={8}
               >
                 <SizableText
                   fontSize={fontSizes.caption}
@@ -150,10 +143,10 @@ export default function AllRecordsScreen() {
                 >
                   {category.name}
                 </SizableText>
-            </YStack>
+              </YStack>
             </Pressable>
           ))}
-        </ScrollView>
+        </XStack>
 
         {/* 支出一覧 */}
         <SectionList
@@ -179,10 +172,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: wanchoColors.ivory,
-  },
-  tagContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
   },
   listContent: {
     paddingBottom: 32,

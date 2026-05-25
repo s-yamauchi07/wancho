@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet } from 'react-native';
 import { YStack, XStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
+import { useNavigation } from '@react-navigation/native';
 import { Button } from '@tamagui/button';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
@@ -9,6 +10,8 @@ import ExpenseFormModal from './ExpenseFormModal';
 import { useExpenseStore } from '@/store/expenseStore';
 import { Expense } from '@/types/expense';
 import { CATEGORIES } from '@/constants/categories';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RecordStackParamList } from '@/navigation/RecordNavigator';
 
 function formatMonth(yearMonth: string): string {
   const [year, month] = yearMonth.split('-').map(Number);
@@ -40,11 +43,10 @@ export default function RecordScreen() {
     monthlyExpenses, 
     selectedMonth, 
     setSelectedMonth 
-  } = useExpenseStore();
-  
+  } = useExpenseStore();  
   const expenses = monthlyExpenses;
-  console.log(expenses)
   const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const navigation = useNavigation<NativeStackNavigationProp<RecordStackParamList, 'RecordMain'>>();
   
   useEffect(() => {
     fetchExpensesByMonth(selectedMonth);
@@ -160,7 +162,7 @@ export default function RecordScreen() {
         >
           最近の支出
         </SizableText>
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={() => navigation.navigate('AllRecords')}>
           <SizableText fontSize={fontSizes.footnote} color="$sage" fontWeight="bold">
             全て見る →
           </SizableText>

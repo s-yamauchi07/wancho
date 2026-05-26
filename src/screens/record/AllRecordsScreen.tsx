@@ -1,4 +1,5 @@
-import { SectionList, Pressable, StyleSheet } from 'react-native';
+import { SectionList, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { YStack, XStack } from '@tamagui/stacks';
@@ -45,7 +46,7 @@ function groupByDate(expenses: Expense[]): Section[] {
 }
 
 export default function AllRecordsScreen() {
-  const { monthlyExpenses } = useExpenseStore();
+  const { monthlyExpenses, deleteExpense } = useExpenseStore();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
 
@@ -62,49 +63,86 @@ export default function AllRecordsScreen() {
     </YStack>
   );
 
+  const renderRightActions = (item: Expense) => {
+    return (
+      <XStack>
+        <TouchableOpacity onPress={() => setEditingExpense(item)}>
+          <YStack 
+            style={{
+              backgroundColor : wanchoColors.sage,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 72,
+              height: '100%',
+            }}
+          >
+            <FontAwesome6 name='edit' size={20} color={wanchoColors.white} />
+            <SizableText style={{color: wanchoColors.white, fontSize: fontSizes.footnote}}>編集</SizableText>
+          </YStack>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => deleteExpense(item.id)}>
+          <YStack 
+            style={{
+              backgroundColor : wanchoColors.firebrick, 
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 72, 
+              height: '100%'
+            }}
+          >
+            <FontAwesome6 name='trash-can' size={20} color={wanchoColors.white} />
+            <SizableText style={{color: wanchoColors.white, fontSize: fontSizes.footnote}}>削除</SizableText>
+          </YStack>
+        </TouchableOpacity>
+      </XStack>
+    )
+  };
+
   const renderItem = ({ item }: { item: Expense }) => {
     const category = CATEGORIES.find((c) => c.id === item.categoryId);
     return (
-      <XStack
-        paddingVertical={12}
-        paddingHorizontal={16}
-        backgroundColor="$white"
-        borderBottomWidth={1}
-        borderBottomColor="$lightGray"
-        alignItems="center"
-        gap={12}
+      <ReanimatedSwipeable
+        renderRightActions={() => renderRightActions(item)}
+        overshootRight={false}
       >
-        <YStack
-          width={36}
-          height={36}
-          borderRadius={18}
-          backgroundColor={category?.bgColor ?? wanchoColors.lightGray}
+        <XStack
+          paddingVertical={12}
+          paddingHorizontal={16}
+          backgroundColor="$white"
+          borderBottomWidth={1}
+          borderBottomColor="$lightGray"
           alignItems="center"
-          justifyContent="center"
+          gap={12}
         >
-          <FontAwesome6
-            name={(category?.icon ?? 'ellipsis') as any}
-            size={18}
-            color={wanchoColors.greige}
-          />
-        </YStack>
-        <YStack flex={1}>
-          <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-            {category?.name ?? 'その他'}
-          </SizableText>
-          {item.memo && (
-            <SizableText fontSize={fontSizes.caption} color="$greige">
-              {item.memo}
+          <YStack
+            width={36}
+            height={36}
+            borderRadius={18}
+            backgroundColor={category?.bgColor ?? wanchoColors.lightGray}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <FontAwesome6
+              name={(category?.icon ?? 'ellipsis') as any}
+              size={18}
+              color={wanchoColors.greige}
+            />
+          </YStack>
+          <YStack flex={1}>
+            <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+              {category?.name ?? 'その他'}
             </SizableText>
-          )}
-        </YStack>
-        <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-          {formatAmount(item.amount)}
-        </SizableText>
-        <Pressable onPress={() => setEditingExpense(item)}>
-          <SizableText>Edit</SizableText>
-        </Pressable>
-      </XStack>
+            {item.memo && (
+              <SizableText fontSize={fontSizes.caption} color="$greige">
+                {item.memo}
+              </SizableText>
+            )}
+          </YStack>
+          <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+            {formatAmount(item.amount)}
+          </SizableText>
+        </XStack>
+      </ReanimatedSwipeable>
     );
   };
 

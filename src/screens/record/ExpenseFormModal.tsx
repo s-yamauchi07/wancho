@@ -1,6 +1,6 @@
 import { Modal, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,10 +16,12 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { usePetStore } from '@/store/petStore';
 import { useExpenseStore } from '@/store/expenseStore';
 import ErrorAlertDialog from '@/components/ErrorAlertDialog';
+import { Expense } from '@/types/expense';
 
-type Props = {  
+type Props = {
   visible: boolean;
   onClose: () => void;
+  editingExpense?: Expense | null;
 };
 
 const expenseSchema = z.object({
@@ -31,10 +33,10 @@ const expenseSchema = z.object({
 
 type ExpenseSchema = z.infer<typeof expenseSchema>;
 
-export default function ExpenseFormModal({ visible, onClose }: Props) {
+export default function ExpenseFormModal({ visible, onClose, editingExpense }: Props) {
   const [show, setShow] = useState(false);
   const pets = usePetStore((state) => state.pets);
-  const { addExpense, isLoading, error } = useExpenseStore();
+  const { addExpense, updateExpense, isLoading, error } = useExpenseStore();
   const [showError, setShowError] = useState(false);
 
   const { control, handleSubmit, formState: { errors }, reset } = useForm<ExpenseSchema>({
@@ -46,17 +48,25 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
     }
   });
 
-  const onSubmit = async (data: ExpenseSchema) => {
-    const petId = pets[0]?.id;
-    if(!petId) {
-      setShowError(true);
-      return;
+  useEffect(() => {
+    if(visible) {
+      editingExpense ? reset({...editingExpense, date: new Date(editingExpense.date + 'T00:00:00') }) : reset()
     }
-    await addExpense({
-      ...data,
-      date: data.date.toISOString().split('T')[0],
-      petId: petId
-    })
+  },[visible, editingExpense]);
+
+  const onSubmit = async (data: ExpenseSchema) => {
+    const formattedDate = data.date.toISOString().split('T')[0];
+
+    if(editingExpense) {
+      await updateExpense(editingExpense.id, {...data, date: formattedDate})
+    } else {
+      const petId = pets[0]?.id;
+      if(!petId) {
+        setShowError(true);
+        return;
+      }
+      await addExpense({...data, date: formattedDate, petId})
+    }
     const { error: storeError } = useExpenseStore.getState();
     if (storeError) {
       setShowError(true);
@@ -86,7 +96,7 @@ export default function ExpenseFormModal({ visible, onClose }: Props) {
             borderBottomColor="$lightGray"
           >
             <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
-              支出を追加
+              {editingExpense ? '支出を編集' : '支出を追加'}
             </SizableText>
             <Pressable onPress={onClose}>
               <Ionicons name="close" size={24} color={wanchoColors.charcoal} />

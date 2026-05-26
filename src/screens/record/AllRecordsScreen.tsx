@@ -8,6 +8,7 @@ import { fontSizes, wanchoColors } from '../../../tamagui.config';
 import { useExpenseStore } from '@/store/expenseStore';
 import { CATEGORIES } from '@/constants/categories';
 import { Expense } from '@/types/expense';
+import ExpenseFormModal from './ExpenseFormModal';
 
 type Section = {
   title: string;
@@ -46,6 +47,7 @@ function groupByDate(expenses: Expense[]): Section[] {
 export default function AllRecordsScreen() {
   const { monthlyExpenses } = useExpenseStore();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
 
   const filteredExpenses = selectedCategoryId
     ? monthlyExpenses.filter((e) => e.categoryId === selectedCategoryId)
@@ -99,6 +101,9 @@ export default function AllRecordsScreen() {
         <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
           {formatAmount(item.amount)}
         </SizableText>
+        <Pressable onPress={() => setEditingExpense(item)}>
+          <SizableText>Edit</SizableText>
+        </Pressable>
       </XStack>
     );
   };
@@ -163,6 +168,11 @@ export default function AllRecordsScreen() {
             </YStack>
           }
         />
+      <ExpenseFormModal 
+        visible={editingExpense !== null}
+        onClose={() => setEditingExpense(null)}
+        editingExpense={editingExpense}
+      />
       </YStack>
     </SafeAreaView>
   );

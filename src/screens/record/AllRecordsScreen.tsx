@@ -10,6 +10,7 @@ import { useExpenseStore } from '@/store/expenseStore';
 import { CATEGORIES } from '@/constants/categories';
 import { Expense } from '@/types/expense';
 import ExpenseFormModal from './ExpenseFormModal';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 type Section = {
   title: string;
@@ -49,6 +50,7 @@ export default function AllRecordsScreen() {
   const { monthlyExpenses, deleteExpense } = useExpenseStore();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [confirmingItem, setConfirmingItem] = useState<Expense | null>(null);
 
   const filteredExpenses = selectedCategoryId
     ? monthlyExpenses.filter((e) => e.categoryId === selectedCategoryId)
@@ -80,7 +82,7 @@ export default function AllRecordsScreen() {
             <SizableText style={{color: wanchoColors.white, fontSize: fontSizes.footnote}}>編集</SizableText>
           </YStack>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => deleteExpense(item.id)}>
+        <TouchableOpacity onPress={() => setConfirmingItem(item)}>
           <YStack 
             style={{
               backgroundColor : wanchoColors.firebrick, 
@@ -206,11 +208,21 @@ export default function AllRecordsScreen() {
             </YStack>
           }
         />
-      <ExpenseFormModal 
-        visible={editingExpense !== null}
-        onClose={() => setEditingExpense(null)}
-        editingExpense={editingExpense}
-      />
+        <ExpenseFormModal
+          visible={editingExpense !== null}
+          onClose={() => setEditingExpense(null)}
+          editingExpense={editingExpense}
+        />
+        <ConfirmDialog
+          open={confirmingItem !== null}
+          onOpenChange={(open) => { if (!open) setConfirmingItem(null); }}
+          title="本当に削除しますか？"
+          buttonLabel="削除する"
+          onConfirm={() => {
+            if (confirmingItem) deleteExpense(confirmingItem.id); 
+            setConfirmingItem(null);
+          }}
+        />
       </YStack>
     </SafeAreaView>
   );

@@ -84,53 +84,31 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
       onRequestClose={onClose}
     >
       <SafeAreaView style={styles.safeArea}>
-        <YStack flex={1} backgroundColor="$ivory">
+          <YStack flex={1} backgroundColor="$ivory">
 
-          {/* ヘッダー */}
-          <XStack
-            paddingHorizontal={16}
-            paddingVertical={12}
-            justifyContent="space-between"
-            alignItems="center"
-            borderBottomWidth={1}
-            borderBottomColor="$lightGray"
-          >
-            <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
-              {editingExpense ? '支出を編集' : '支出を追加'}
-            </SizableText>
-            <Pressable onPress={onClose}>
-              <Ionicons name="close" size={24} color={wanchoColors.charcoal} />
-            </Pressable>
-          </XStack>
+            {/* ヘッダー */}
+            <XStack
+              paddingHorizontal={16}
+              paddingVertical={12}
+              justifyContent="space-between"
+              alignItems="center"
+              borderBottomWidth={1}
+              borderBottomColor="$lightGray"
+            >
+              <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
+                {editingExpense ? '支出を編集' : '支出を追加'}
+              </SizableText>
+              <Pressable onPress={onClose}>
+                <Ionicons name="close" size={24} color={wanchoColors.charcoal} />
+              </Pressable>
+            </XStack>
 
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            <YStack gap={24}>
-
-              {/* カテゴリ選択 */}
-              <Controller
-                control={control}
-                name="categoryId"
-                render={({ field: { value, onChange }}) => 
-                <YStack gap={8}>
-                  <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-                    カテゴリ
-                  </SizableText>
-                  <CategoryGrid
-                    categories={CATEGORIES}
-                    selectedCategoryId={value ?? null}
-                    onSelect={onChange}
-                  />
-                </YStack>
-                } 
-              />
-              <YStack>
-              {errors.categoryId && 
-                <SizableText fontSize={fontSizes.footnote} color="$firebrick">
-                  カテゴリを選択してください
-                </SizableText>
-              }
-              </YStack>
-
+            <ScrollView
+              style={{ flex: 1 }}
+              contentContainerStyle={styles.scrollContent}
+              keyboardShouldPersistTaps="handled"
+              automaticallyAdjustKeyboardInsets
+            >
               {/* 日付 */}
               <Controller
                 control={control}
@@ -218,6 +196,31 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
                 </SizableText>
               }
               </YStack>
+              <YStack gap={24}>
+                {/* カテゴリ選択 */}
+                <Controller
+                  control={control}
+                  name="categoryId"
+                  render={({ field: { value, onChange }}) => 
+                  <YStack gap={8}>
+                    <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+                      カテゴリ
+                    </SizableText>
+                    <CategoryGrid
+                      categories={CATEGORIES}
+                      selectedCategoryId={value ?? null}
+                      onSelect={onChange}
+                    />
+                  </YStack>
+                  } 
+                />
+                <YStack>
+                {errors.categoryId && 
+                  <SizableText fontSize={fontSizes.footnote} color="$firebrick">
+                    カテゴリを選択してください
+                  </SizableText>
+                }
+              </YStack>
 
               {/* メモ */}
               <YStack gap={8}>
@@ -244,32 +247,32 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
                   }
                 />
               </YStack>
-            </YStack>
-          </ScrollView>
+              </YStack>
+              {/* 保存ボタン */}
+              {/* TODO: isLoading 中はローディング表示に切り替える */}
+              <YStack paddingHorizontal={16} paddingBottom={16}>
+                <Button
+                  backgroundColor="$sage"
+                  borderRadius={30}
+                  borderWidth={0}
+                  pressStyle={{ opacity: 0.8 }}
+                  onPress={handleSubmit(onSubmit)}
+                  disabled={isLoading === true}
+                >
+                  <Button.Text fontSize={fontSizes.body} color="$white" fontWeight="bold">
+                    {isLoading ? "保存中..." : "保存" }
+                  </Button.Text>
+                </Button>
+              </YStack>
+            </ScrollView>
 
-          {/* 保存ボタン */}
-          {/* TODO: isLoading 中はローディング表示に切り替える */}
-          <YStack paddingHorizontal={16} paddingBottom={16}>
-            <Button
-              backgroundColor="$sage"
-              borderRadius={30}
-              borderWidth={0}
-              pressStyle={{ opacity: 0.8 }}
-              onPress={handleSubmit(onSubmit)}
-              disabled={isLoading === true}
-            >
-              <Button.Text fontSize={fontSizes.body} color="$white" fontWeight="bold">
-                {isLoading ? "保存中..." : "保存" }
-              </Button.Text>
-            </Button>
+            <ErrorAlertDialog
+              open={showError}
+              onOpenChange={setShowError}
+              title="エラーが発生しました"
+              description={error}
+            />
           </YStack>
-          <ErrorAlertDialog
-            open={showError}
-            onOpenChange={setShowError}
-            title="エラーが発生しました"
-            description={error}
-          />
-        </YStack>
       </SafeAreaView>
     </Modal>
   );
@@ -282,5 +285,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
+    paddingBottom: 32,
   },
 });

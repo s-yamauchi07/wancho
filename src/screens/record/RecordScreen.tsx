@@ -7,9 +7,10 @@ import { Button } from '@tamagui/button';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
 import ExpenseFormModal from './ExpenseFormModal';
+import { SwipeableExpenseRow } from '@/components/record/SwipeableExpenseRow';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { useExpenseStore } from '@/store/expenseStore';
 import { Expense } from '@/types/expense';
-import { CATEGORIES } from '@/constants/categories';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RecordStackParamList } from '@/navigation/RecordNavigator';
 
@@ -26,86 +27,28 @@ function shiftMonth(yearMonth: string, delta: number): string {
   return `${y}-${m}`;
 }
 
-function formatDate(dateStr: string): string {
-  const [, month, day] = dateStr.split('-');
-  return `${Number(month)}/${Number(day)}`;
-}
-
 function formatAmount(amount: number): string {
   return `¥${amount.toLocaleString()}`;
 }
 
-
 export default function RecordScreen() {
-  const [modalVisible, setModalVisible] = useState(false);
   const { 
     fetchExpensesByMonth,
     monthlyExpenses, 
     selectedMonth, 
-    setSelectedMonth 
+    setSelectedMonth,
+    deleteExpense
   } = useExpenseStore();  
   const expenses = monthlyExpenses;
   const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
   const navigation = useNavigation<NativeStackNavigationProp<RecordStackParamList, 'RecordMain'>>();
+  const [editingExpense, setEditExpense] = useState<Expense | null>(null);
+  const [confirmingItem, setConfirmingItem] = useState<Expense | null>(null);
+  const [ModalVisible, setModalVisible] = useState<boolean>(false);
   
   useEffect(() => {
     fetchExpensesByMonth(selectedMonth);
   }, [selectedMonth]);
-
-  const renderExpenseItem = ({ item }: { item: Expense }) => {
-    const category = CATEGORIES.find((c) => c.id === item.categoryId)
-    return (
-      <Pressable onPress={() => {}}>
-        <XStack
-          paddingVertical={12}
-          paddingHorizontal={16}
-          backgroundColor="$white"
-          borderRadius={12}
-          marginBottom={8}
-          alignItems="center"
-          gap={12}
-        >
-          {/* カテゴリアイコン（仮: 丸背景） */}
-          <YStack
-            width={40}
-            height={40}
-            borderRadius={20}
-            backgroundColor={category?.bgColor}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <SizableText fontSize={fontSizes.caption} color="$white">
-              <FontAwesome6 name={category?.icon} size={20} />
-            </SizableText>
-          </YStack>
-
-          {/* カテゴリ名・メモ */}
-          <YStack flex={1}>
-            <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-              {category?.name}
-            </SizableText>
-            <XStack gap={4}>
-              <SizableText fontSize={fontSizes.caption} color="$greige">
-                {formatDate(item.date)}
-              </SizableText>
-              {item.memo && (
-                <SizableText fontSize={fontSizes.caption} color="$greige">
-                  {item.memo}
-                </SizableText>
-              )}
-            </XStack>
-          </YStack>
-
-          {/* 金額・日付 */}
-          <YStack alignItems="flex-end">
-            <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-              {formatAmount(item.amount)}
-            </SizableText>
-          </YStack>
-        </XStack>
-      </Pressable>
-    )
-  };
 
   return (
     <YStack flex={1} backgroundColor="$ivory">
@@ -173,7 +116,14 @@ export default function RecordScreen() {
       <FlatList
         data={expenses}
         keyExtractor={(item) => String(item.id)}
-        renderItem={renderExpenseItem}
+        renderItem={({item}) => (
+          <SwipeableExpenseRow
+            item={item}
+            onEdit={setEditExpense}
+            onDelete={setConfirmingItem}
+            showDate={true} 
+          />
+        )}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <YStack flex={1} alignItems="center" justifyContent="center" paddingTop={60}>
@@ -202,8 +152,23 @@ export default function RecordScreen() {
 
       {/* 支出追加モーダル */}
       <ExpenseFormModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        visible={ModalVisible || editingExpense !== null}
+        onClose={() => {
+          setModalVisible(false);
+          setEditExpense(null);
+        }}
+        editingExpense={editingExpense}
+      />
+      {/* 削除確認用のModal */}
+      <ConfirmDialog 
+        open={confirmingItem !== null}
+        onOpenChange={(open) => {if (!open) setConfirmingItem(null); }}
+        title='本当に削除しますか？'
+        buttonLabel='削除する'
+        onConfirm={() => {
+          if (confirmingItem) deleteExpense(confirmingItem.id);
+          setConfirmingItem(null);
+        }}
       />
     </YStack>
   );

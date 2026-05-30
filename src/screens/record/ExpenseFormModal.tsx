@@ -26,7 +26,7 @@ type Props = {
 
 const expenseSchema = z.object({
   categoryId: z.int(),
-  amount: z.int().min(1, '0円以上入力してください'),
+  amount: z.coerce.number<number>().int().min(1,'0円以上を入力してください'),
   date: z.date(),
   memo: z.string().nullable()
 })
@@ -167,7 +167,7 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
                   alignItems="center"
                   gap={4}
                 >
-                  <Controller 
+                  <Controller
                     control={control}
                     name="amount"
                     render={({ field: { onChange, value }}) => 
@@ -177,7 +177,7 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
                         placeholder="0"
                         keyboardType="numeric"
                         value={value != null ? String(value) : ''}
-                        onChangeText={(text) => onChange(text === '' ? undefined : parseInt(text, 10))}
+                        onChangeText={onChange}
                         fontSize={fontSizes.body}
                         color="$charcoal"
                         paddingVertical={12}
@@ -250,7 +250,7 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
               </YStack>
               {/* 保存ボタン */}
               {/* TODO: isLoading 中はローディング表示に切り替える */}
-              <YStack paddingHorizontal={16} paddingBottom={16}>
+              <YStack paddingHorizontal={16} paddingVertical={16}>
                 <Button
                   backgroundColor="$sage"
                   borderRadius={30}

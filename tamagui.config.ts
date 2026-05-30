@@ -15,6 +15,7 @@ export const wanchoColors = {
   sage: '#ABB5A1',
   mint: '#A8C5BB',
   sandBeige: '#E7E2DB',
+  taupe: '#C2B5A3',
   camel: '#C4A882',
   charcoal: '#333333',
   greige: '#6F6F6F',

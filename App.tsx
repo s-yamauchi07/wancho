@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
-import { Text, View } from 'react-native';
 import { TamaguiProvider } from '@tamagui/core'
 import { PortalProvider } from '@tamagui/portal'
 import { useFonts } from 'expo-font';
@@ -56,12 +57,14 @@ export default function App() {
   }
 
   return (
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
-      <PortalProvider>
-        <NavigationContainer>
-          <RootNavigator />
-        </NavigationContainer>
-      </PortalProvider>
-    </TamaguiProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+        <PortalProvider>
+          <NavigationContainer>
+            <RootNavigator />
+          </NavigationContainer>
+        </PortalProvider>
+      </TamaguiProvider>
+    </GestureHandlerRootView>
   );
 }

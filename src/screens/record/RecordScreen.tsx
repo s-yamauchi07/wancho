@@ -39,8 +39,10 @@ export default function RecordScreen() {
     setSelectedMonth,
     deleteExpense
   } = useExpenseStore();  
-  const expenses = monthlyExpenses;
-  const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalAmount = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const recentExpenses = [...monthlyExpenses]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 5);
   const navigation = useNavigation<NativeStackNavigationProp<RecordStackParamList, 'RecordMain'>>();
   const [editingExpense, setEditExpense] = useState<Expense | null>(null);
   const [confirmingItem, setConfirmingItem] = useState<Expense | null>(null);
@@ -114,7 +116,7 @@ export default function RecordScreen() {
 
       {/* 支出一覧 */}
       <FlatList
-        data={expenses}
+        data={recentExpenses}
         keyExtractor={(item) => String(item.id)}
         renderItem={({item}) => (
           <SwipeableExpenseRow

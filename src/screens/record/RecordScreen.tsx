@@ -66,7 +66,7 @@ export default function RecordScreen() {
           {formatMonth(selectedMonth)}
         </SizableText>
         <Pressable onPress={() => setSelectedMonth(shiftMonth(selectedMonth, 1))}>
-          <FontAwesome6 name="arrow-right"size={24} color={wanchoColors.charcoal} />
+          <FontAwesome6 name="arrow-right" size={24} color={wanchoColors.charcoal} />
         </Pressable>
       </XStack>
 

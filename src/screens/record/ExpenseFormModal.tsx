@@ -26,7 +26,7 @@ type Props = {
 
 const expenseSchema = z.object({
   categoryId: z.int(),
-  amount: z.coerce.number<number>().int().min(1,'0円以上を入力してください'),
+  amount: z.coerce.number<number>().int().min(1,'1円以上を入力してください'),
   date: z.date(),
   memo: z.string().nullable()
 })
@@ -125,7 +125,7 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
                       <RNDateTimePicker
                         value={value}
                         display="inline"
-                        locale="jp"
+                        locale="ja"
                         onChange={(_, selectedDate) => {
                           if (selectedDate) onChange(selectedDate);
                           setShow(false);

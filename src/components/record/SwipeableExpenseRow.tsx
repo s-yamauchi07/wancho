@@ -98,14 +98,15 @@ export const SwipeableExpenseRow = ({
           width={36}
           height={36}
           borderRadius={18}
-          backgroundColor={category?.bgColor ?? wanchoColors.lightGray}
+          borderColor={category?.bgColor ?? wanchoColors.sage}
+          borderWidth={1} 
           alignItems="center"
           justifyContent="center"
         >
           <FontAwesome6
             name={(category?.icon ?? 'ellipsis') as any}
             size={18}
-            color={wanchoColors.greige}
+            color={category?.bgColor ?? wanchoColors.greige}
           />
         </YStack>
         <YStack flex={1}>

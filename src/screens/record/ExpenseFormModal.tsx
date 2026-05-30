@@ -85,7 +85,6 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
     >
       <SafeAreaView style={styles.safeArea}>
           <YStack flex={1} backgroundColor="$ivory">
-
             {/* ヘッダー */}
             <XStack
               paddingHorizontal={16}

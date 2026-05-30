@@ -4,6 +4,7 @@ import { SizableText } from '@tamagui/text';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
 import { Category } from '@/types/categories';
+import { CATEGORIES } from '@/constants/categories';
 
 type Props = {
   categories: Category[];
@@ -32,18 +33,21 @@ export default function CategoryGrid({ categories, selectedCategoryId, onSelect 
               paddingVertical={12}
               borderRadius={12}
               borderWidth={2}
-              borderColor={isSelected ? '$sage' : 'transparent'}
-              backgroundColor={isSelected ? '$sandBeige' : '$lightGray'}
+              borderColor={isSelected ? item.bgColor : 'transparent'}
+              backgroundColor={wanchoColors.lightGray}
             >
               <YStack
                 width={44}
                 height={44}
                 borderRadius={22}
-                backgroundColor={item.bgColor}
                 alignItems="center"
                 justifyContent="center"
               >
-                <FontAwesome6 name={item.icon as keyof typeof FontAwesome6.glyphMap} size={22} color={wanchoColors.greige} />
+                <FontAwesome6 
+                  name={item.icon as keyof typeof FontAwesome6.glyphMap} 
+                  size={32} 
+                  color={item.bgColor} 
+                />
               </YStack>
               <SizableText
                 fontSize={fontSizes.caption}

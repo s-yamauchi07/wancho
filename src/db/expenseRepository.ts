@@ -9,6 +9,10 @@ export const getExpenses = async () => {
 
 // 1ヶ月ごとの費用抽出
 export const getExpensesByMonth = async (yearMonth: string) => {
+  // 日付け意識のバリデーションをチェック
+  if (!/^\d{4}-\d{2}$/.test(yearMonth)) {
+    throw new Error(`Invalid yearMonth format: ${yearMonth}`);
+  }
   return await db.select().from(expenses).where(like(expenses.date, `${yearMonth}-%`));
 }
 

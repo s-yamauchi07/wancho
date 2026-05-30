@@ -22,9 +22,13 @@ type ExpenseActions = {
 export const useExpenseStore = create<ExpenseState & ExpenseActions>((set) => {
   // 月別データの再取得をして月別データも更新する
   const refreshMonthlyExpenses = async () => {
-    const { selectedMonth } = useExpenseStore.getState();
-    const monthlyData = await getExpensesByMonth(selectedMonth);
-    set({ monthlyExpenses: monthlyData });
+    try {
+      const { selectedMonth } = useExpenseStore.getState();
+      const monthlyData = await getExpensesByMonth(selectedMonth);
+      set({ monthlyExpenses: monthlyData });
+    } catch (error) {
+      set({error: '更新に失敗しました'});
+    }
   };
 
   return {

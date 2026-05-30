@@ -1,7 +1,7 @@
 import AllRecordsScreen from "@/screens/record/AllRecordsScreen";
 import RecordScreen from "@/screens/record/RecordScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { wanchoColors } from "tamagui.config";
+import { wanchoColors } from "../../tamagui.config";
 
 export type RecordStackParamList = {
   RecordMain: undefined;

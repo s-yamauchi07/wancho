@@ -55,7 +55,10 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
   },[visible, editingExpense]);
 
   const onSubmit = async (data: ExpenseSchema) => {
-    const formattedDate = data.date.toISOString().split('T')[0];
+    const year = data.date.getFullYear();
+    const month = String(data.date.getMonth() + 1).padStart(2, '0');
+    const day = String(data.date.getDate()).padStart(2,'0');
+    const formattedDate = `${year}-${month}-${day}`;
 
     if(editingExpense) {
       await updateExpense(editingExpense.id, {...data, date: formattedDate})

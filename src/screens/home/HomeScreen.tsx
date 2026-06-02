@@ -7,6 +7,7 @@ import { fontSizes, wanchoColors } from '../../../tamagui.config';
 import { useExpenseStore } from '@/store/expenseStore';
 import { Expense } from '@/types/expense';
 import { CATEGORIES } from '@/constants/categories';
+import { PieChart } from 'react-native-gifted-charts';
 
 export default function HomeScreen() {
   const { fetchPets, pets } = usePetStore();
@@ -103,11 +104,21 @@ export default function HomeScreen() {
           <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
             カテゴリ別支出
           </SizableText>
-          {/* TODO(human) 5-2: PieChart コンポーネントを配置し、5-1 のデータを渡す */}
-
+          {chartData.length > 0 ? (
+          <YStack alignItems="center">
+            <PieChart 
+              data={chartData}
+              radius={100}
+              donut
+            />
+          </YStack>
+          ) : (
+            <SizableText fontSize={fontSizes.body} color="$greige">
+              今月の支出はありません
+            </SizableText>
+          )}
           {/* TODO(human) 5-3: 各カテゴリの色丸・名前・金額を並べた凡例を表示する */}
 
-          {/* TODO(human) 5-4: monthlyExpenses が空のとき「今月の支出はありません」を表示する */}
         </YStack>
 
         {/* 積立目標プログレスバーセクション */}

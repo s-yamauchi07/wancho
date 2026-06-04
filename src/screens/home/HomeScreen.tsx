@@ -8,6 +8,7 @@ import { useExpenseStore } from '@/store/expenseStore';
 import { Expense } from '@/types/expense';
 import { CATEGORIES } from '@/constants/categories';
 import { PieChart } from 'react-native-gifted-charts';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function HomeScreen() {
   const { fetchPets, pets } = usePetStore();
@@ -54,97 +55,130 @@ export default function HomeScreen() {
         return acc;
     }, []);
 
+  // chartの汎用ラベル表示
+  const renderLabelComponent = (data: { value: number, color: string, label: string }[]) => {
+    return data.map(({ value, color, label }) => (
+      <XStack 
+        justifyContent="space-between"
+        paddingBottom={4}
+        borderBottomWidth={1}
+        borderBottomColor={wanchoColors.sage}
+      >
+        <XStack 
+          key={label} 
+          alignItems="center"
+          gap={6} 
+        >
+          <XStack
+            alignItems="center"
+            width={10}
+            height={10}
+            borderRadius={5}
+            backgroundColor={color}
+          />
+          <SizableText 
+            color={wanchoColors.charcoal}
+            fontSize={fontSizes.body}
+          >
+            {label}
+          </SizableText>
+        </XStack>
+        <SizableText 
+          color={wanchoColors.charcoal}
+          fontSize={fontSizes.body}
+        >
+          ¥{value}
+        </SizableText>
+      </XStack>
+    ));
+  };
+
+
   // TODO: 今後nullではなくloadingのコンポーネントを表示させるように改修する。
   if (!pet) return null;
   return (
-    <YStack flex={1} backgroundColor="$ivory">
-      <YStack padding={16} gap={16} paddingBottom={32}>
-        <YStack
-          backgroundColor="$ivory"
-          borderRadius={12}
-          padding={16}
-          alignItems="center"
-          gap={12}
-        >
-          <Avatar circular size="$12">
-            {pet.photoUri == null ? (
-              <Avatar.Image src={require('../../../assets/pet-registration/pet_avatar_default.png')} />
-            ) : (
-              <Avatar.Image src={pet.photoUri} />
-            )}
-          </Avatar>
-          <SizableText 
-            fontSize={fontSizes.heading1} 
-            color={wanchoColors.charcoal}
-            fontWeight="bold"
+    <ScrollView>
+      <YStack flex={1} backgroundColor="$ivory">
+        <YStack padding={16} gap={16} paddingBottom={32}>
+          <YStack
+            backgroundColor="$ivory"
+            borderRadius={12}
+            padding={16}
+            alignItems="center"
+            gap={12}
           >
-            {pet.name}
-          </SizableText>
-        </YStack>
-
-        {/* 今月の支出合計セクション */}
-        <YStack
-          backgroundColor="$white"
-          borderRadius={12}
-          padding={16}
-          gap={4}
-        >
-          <SizableText fontSize={fontSizes.heading1} color={wanchoColors.charcoal}>
-            今月の支出({displayedMonth}月): ¥{totalAmount.toLocaleString()}
-          </SizableText>
-        </YStack>
-
-        {/* カテゴリ別グラフセクション */}
-        <YStack
-          backgroundColor="$white"
-          borderRadius={12}
-          padding={16}
-          gap={8}
-        >
-          <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
-            カテゴリ別支出
-          </SizableText>
-          {chartData.length > 0 ? (
-          <YStack alignItems="center">
-            <PieChart 
-              data={chartData}
-              radius={100}
-              donut
-            />
-          </YStack>
-          ) : (
-            <SizableText fontSize={fontSizes.body} color="$greige">
-              今月の支出はありません
+            <Avatar circular size="$12">
+              {pet.photoUri == null ? (
+                <Avatar.Image src={require('../../../assets/pet-registration/pet_avatar_default.png')} />
+              ) : (
+                <Avatar.Image src={pet.photoUri} />
+              )}
+            </Avatar>
+            <SizableText 
+              fontSize={fontSizes.heading1} 
+              color={wanchoColors.charcoal}
+              fontWeight="bold"
+            >
+              {pet.name}
             </SizableText>
-          )}
-          {/* TODO(human) 5-3: 各カテゴリの色丸・名前・金額を並べた凡例を表示する */}
+          </YStack>
 
-        </YStack>
+          {/* カテゴリ別グラフセクション */}
+          <YStack
+            backgroundColor="$white"
+            borderRadius={12}
+            padding={16}
+            gap={16}
+          >
+            <SizableText fontSize={fontSizes.heading1} color={wanchoColors.charcoal}>
+              今月の支出({displayedMonth}月): ¥{totalAmount.toLocaleString()}
+            </SizableText>
+            {chartData.length > 0 ? (
+              <YStack gap={16} alignItems="center">
+                <PieChart
+                  data={chartData}
+                  radius={100}
+                  innerRadius={50}
+                  donut
+                />
+                <YStack width="100%">
+                  <YStack gap={4}>
+                    {renderLabelComponent(chartData)}
+                  </YStack>
+                </YStack>
+              </YStack>
+            ) : (
+              <SizableText fontSize={fontSizes.body} color="$greige">
+                今月の支出はありません
+              </SizableText>
+            )}
+          </YStack>
 
-        {/* 積立目標プログレスバーセクション */}
-        <YStack
-          backgroundColor="$white"
-          borderRadius={12}
-          padding={16}
-          gap={8}
-        >
-          <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
-            積立目標
-          </SizableText>
-        </YStack>
-
-        {/* 最近の支出セクション */}
-        <YStack gap={8}>
-          <XStack justifyContent="space-between" alignItems="center">
+          {/* 積立目標プログレスバーセクション */}
+          <YStack
+            backgroundColor="$white"
+            borderRadius={12}
+            padding={16}
+            gap={8}
+          >
             <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
-              最近の支出
+              積立目標
             </SizableText>
-          </XStack>
-          <YStack backgroundColor="$white" borderRadius={12}>
           </YStack>
-        </YStack>
 
+          {/* 最近の支出セクション */}
+          <YStack gap={8}>
+            <XStack justifyContent="space-between" alignItems="center">
+              <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
+                最近の支出
+              </SizableText>
+            </XStack>
+            <YStack backgroundColor="$white" borderRadius={12}>
+            </YStack>
+          </YStack>
+
+        </YStack>
       </YStack>
-    </YStack>
+    </ScrollView>
   );
 }

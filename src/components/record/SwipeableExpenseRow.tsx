@@ -10,9 +10,10 @@ import { Expense } from '@/types/expense';
 
 type SwipeableRowProps = {
   item: Expense;
-  onEdit: (item: Expense) => void;
-  onDelete: (item: Expense) => void;
+  onEdit?: (item: Expense) => void;
+  onDelete?: (item: Expense) => void;
   showDate: boolean;
+  enableSwipe?: boolean;
 }
 
 function formatAmount(amount: number): string {
@@ -26,22 +27,23 @@ function formatDate(dateStr: string): string {
 
 // 各費用リストの1行分のコンポーネント
 export const SwipeableExpenseRow = ({
-  item, 
-  onEdit, 
-  onDelete, 
-  showDate
+  item,
+  onEdit,
+  onDelete,
+  showDate,
+  enableSwipe = true,
 } : SwipeableRowProps) => {
   const category = CATEGORIES.find((c) => c.id === item.categoryId);
   const ref = useRef<SwipeableMethods | null>(null);
 
   const handleEdit = (item: Expense) => {
     ref.current?.close();
-    onEdit(item);
+    onEdit?.(item);
   };
 
   const handleDelete = (item: Expense) => {
     ref.current?.close();
-    onDelete(item);
+    onDelete?.(item);
   };
 
   const renderRightActions = (item: Expense) => {
@@ -62,12 +64,12 @@ export const SwipeableExpenseRow = ({
           </YStack>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleDelete(item)}>
-          <YStack 
+          <YStack
             style={{
-              backgroundColor : wanchoColors.firebrick, 
+              backgroundColor : wanchoColors.firebrick,
               alignItems: 'center',
               justifyContent: 'center',
-              width: 72, 
+              width: 72,
               height: '100%'
             }}
           >
@@ -77,43 +79,38 @@ export const SwipeableExpenseRow = ({
         </TouchableOpacity>
       </XStack>
     )
-  }; 
+  };
 
-  return (
-    <ReanimatedSwipeable
-      ref={ref}
-      renderRightActions={() => renderRightActions(item)}
-      overshootRight={false}
+  const rowContent = (
+    <XStack
+      paddingVertical={12}
+      paddingHorizontal={16}
+      backgroundColor="$white"
+      borderBottomWidth={1}
+      borderBottomColor="$lightGray"
+      alignItems="center"
+      gap={12}
     >
-      <XStack
-        paddingVertical={12}
-        paddingHorizontal={16}
-        backgroundColor="$white"
-        borderBottomWidth={1}
-        borderBottomColor="$lightGray"
+      <YStack
+        width={36}
+        height={36}
+        borderRadius={18}
+        borderColor={category?.bgColor ?? wanchoColors.sage}
+        borderWidth={1}
         alignItems="center"
-        gap={12}
+        justifyContent="center"
       >
-        <YStack
-          width={36}
-          height={36}
-          borderRadius={18}
-          borderColor={category?.bgColor ?? wanchoColors.sage}
-          borderWidth={1} 
-          alignItems="center"
-          justifyContent="center"
-        >
-          <FontAwesome6
-            name={(category?.icon ?? 'ellipsis') as any}
-            size={18}
-            color={category?.bgColor ?? wanchoColors.greige}
-          />
-        </YStack>
-        <YStack flex={1}>
-          <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-            {category?.name ?? 'その他'}
-          </SizableText>
-          <XStack gap={4}>
+        <FontAwesome6
+          name={(category?.icon ?? 'ellipsis') as any}
+          size={18}
+          color={category?.bgColor ?? wanchoColors.greige}
+        />
+      </YStack>
+      <YStack flex={1}>
+        <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+          {category?.name ?? 'その他'}
+        </SizableText>
+        <XStack gap={4}>
           {showDate && (
             <SizableText fontSize={fontSizes.caption} color="$greige">
               {formatDate(item.date)}
@@ -124,12 +121,23 @@ export const SwipeableExpenseRow = ({
               {item.memo}
             </SizableText>
           )}
-          </XStack>
-        </YStack>
-        <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
-          {formatAmount(item.amount)}
-        </SizableText>
-      </XStack>
+        </XStack>
+      </YStack>
+      <SizableText fontSize={fontSizes.body} fontWeight="bold" color="$charcoal">
+        {formatAmount(item.amount)}
+      </SizableText>
+    </XStack>
+  );
+
+  if (!enableSwipe) return rowContent;
+
+  return (
+    <ReanimatedSwipeable
+      ref={ref}
+      renderRightActions={() => renderRightActions(item)}
+      overshootRight={false}
+    >
+      {rowContent}
     </ReanimatedSwipeable>
   );
 };

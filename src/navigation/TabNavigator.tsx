@@ -5,7 +5,7 @@ import ReportScreen from '@/screens/report/ReportScreen';
 import SettingsScreen from '@/screens/settings/SettingsScreen';
 import RecordNavigator from './RecordNavigator';
 
-type TabParamList = {
+export type TabParamList = {
   Home: undefined;
   Record: undefined;
   Planner: undefined;

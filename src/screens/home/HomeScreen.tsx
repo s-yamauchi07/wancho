@@ -1,15 +1,20 @@
 import { useEffect } from 'react';
-import { usePetStore } from '@/store/petStore';
+import { FlatList, Pressable, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { TabParamList } from '@/navigation/TabNavigator';
+import { PieChart } from 'react-native-gifted-charts';
+import { ScrollView } from 'react-native-gesture-handler';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { YStack, XStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
 import { Avatar } from '@tamagui/avatar';
 import { Progress } from '@tamagui/progress';
 import { fontSizes, lineHeights, wanchoColors } from '../../../tamagui.config';
+import { usePetStore } from '@/store/petStore';
 import { useExpenseStore } from '@/store/expenseStore';
 import { Expense } from '@/types/expense';
 import { CATEGORIES } from '@/constants/categories';
-import { PieChart } from 'react-native-gifted-charts';
-import { ScrollView } from 'react-native-gesture-handler';
+import { SwipeableExpenseRow } from '@/components/record/SwipeableExpenseRow'
 
 export default function HomeScreen() {
   const { fetchPets, pets } = usePetStore();
@@ -22,6 +27,12 @@ export default function HomeScreen() {
   const savingGoal = 10000;
   const monthlySaving = 6000;
   const achievementRate = Math.floor(monthlySaving / savingGoal * 100);
+
+  const recentExpenses = [...monthlyExpenses]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0,3);
+
+  const navigation = useNavigation<BottomTabNavigationProp<TabParamList, 'Home'>>();
 
   useEffect(() => {
     fetchPets();
@@ -103,7 +114,7 @@ export default function HomeScreen() {
   if (!pet) return null;
   return (
     <ScrollView>
-      <YStack flex={1} backgroundColor="$ivory">
+      <YStack flex={1} backgroundColor="ivory">
         <YStack padding={16} gap={16} paddingBottom={32}>
           <YStack
             backgroundColor="$ivory"
@@ -189,15 +200,51 @@ export default function HomeScreen() {
             </XStack>
           </YStack>
 
-          {/* 最近の支出セクション */}
-          <YStack gap={8}>
-            <XStack justifyContent="space-between" alignItems="center">
-              <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
+          <YStack 
+            backgroundColor="$white"
+            borderRadius={12}
+            paddingVertical={16}
+            gap={8}
+          >
+            <XStack 
+              justifyContent="space-between" 
+              alignItems="center"
+              paddingHorizontal={16} 
+              marginBottom={8}
+            >
+              <SizableText
+                fontSize={fontSizes.title}
+                lineHeight={lineHeights.title}
+                fontWeight="bold"
+                color="$charcoal"
+              >
                 最近の支出
               </SizableText>
+              <Pressable onPress={() => navigation.navigate('Record')}>
+                <SizableText fontSize={fontSizes.body} color="$sage" fontWeight="bold">
+                  全て見る →
+                </SizableText>
+              </Pressable>
             </XStack>
-            <YStack backgroundColor="$white" borderRadius={12}>
-            </YStack>
+            {/* 支出一覧 */}
+            <FlatList
+              data={recentExpenses}
+              keyExtractor={(item) => String(item.id)}
+              renderItem={({item}) => (
+                <SwipeableExpenseRow
+                  item={item}
+                  showDate={true} 
+                  enableSwipe={false}
+                />
+              )}
+              ListEmptyComponent={
+                <YStack flex={1} alignItems="center" justifyContent="center" paddingTop={60}>
+                  <SizableText fontSize={fontSizes.body} color="$greige">
+                    記録がありません
+                  </SizableText>
+                </YStack>
+              }
+            />
           </YStack>
 
         </YStack>

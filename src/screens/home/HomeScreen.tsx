@@ -4,7 +4,7 @@ import { YStack, XStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
 import { Avatar } from '@tamagui/avatar';
 import { Progress } from '@tamagui/progress';
-import { fontSizes, wanchoColors } from '../../../tamagui.config';
+import { fontSizes, lineHeights, wanchoColors } from '../../../tamagui.config';
 import { useExpenseStore } from '@/store/expenseStore';
 import { Expense } from '@/types/expense';
 import { CATEGORIES } from '@/constants/categories';
@@ -135,7 +135,7 @@ export default function HomeScreen() {
             padding={16}
             gap={16}
           >
-            <SizableText fontSize={fontSizes.title} fontWeight="bold" color={wanchoColors.charcoal}>
+            <SizableText fontSize={fontSizes.title} lineHeight={lineHeights.title} fontWeight="bold" color={wanchoColors.charcoal}>
               今月の支出({displayedMonth}月) ¥{totalAmount.toLocaleString()}
             </SizableText>
             {chartData.length > 0 ? (
@@ -166,7 +166,7 @@ export default function HomeScreen() {
             padding={16}
             gap={12}
           >
-            <SizableText fontSize={fontSizes.title} fontWeight="bold" color="$charcoal">
+            <SizableText fontSize={fontSizes.title} lineHeight={lineHeights.title} fontWeight="bold" color="$charcoal">
               積立目標
             </SizableText>
             <XStack justifyContent="space-between">

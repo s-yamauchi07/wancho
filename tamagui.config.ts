@@ -39,6 +39,10 @@ export const fontSizes = {
   caption: 11,
 } as const
 
+export const lineHeights = Object.fromEntries(
+  Object.entries(fontSizes).map(([key, value]) => [key, value * 1.5])
+) as { [K in keyof typeof fontSizes]: number }
+
 export const tamaguiConfig = createTamagui({
   ...defaultConfig,
   fonts: {

@@ -5,7 +5,7 @@ import { SizableText } from '@tamagui/text';
 import { useNavigation } from '@react-navigation/native';
 import { Button } from '@tamagui/button';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { fontSizes, wanchoColors } from '../../../tamagui.config';
+import { fontSizes, lineHeights, wanchoColors } from '../../../tamagui.config';
 import ExpenseFormModal from './ExpenseFormModal';
 import { SwipeableExpenseRow } from '@/components/record/SwipeableExpenseRow';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -86,7 +86,7 @@ export default function RecordScreen() {
         </SizableText>
         <SizableText 
           fontSize={fontSizes.display}
-          lineHeight={fontSizes.display * 1.5}
+          lineHeight={lineHeights.display}
           fontWeight="bold"
           color="$charcoal"
         >
@@ -102,7 +102,8 @@ export default function RecordScreen() {
       >
         <SizableText
           fontSize={fontSizes.title}
-          lineHeight={fontSizes.title * 1.5}
+          lineHeight={lineHeights.title}
+          fontWeight="bold"
           color="$charcoal"
         >
           最近の支出

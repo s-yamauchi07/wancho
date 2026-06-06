@@ -3,6 +3,7 @@ import { usePetStore } from '@/store/petStore';
 import { YStack, XStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
 import { Avatar } from '@tamagui/avatar';
+import { Progress } from '@tamagui/progress';
 import { fontSizes, wanchoColors } from '../../../tamagui.config';
 import { useExpenseStore } from '@/store/expenseStore';
 import { Expense } from '@/types/expense';
@@ -15,14 +16,18 @@ export default function HomeScreen() {
   const { fetchExpensesByMonth, monthlyExpenses } = useExpenseStore();
   const selectedMonth = new Date().toISOString().slice(0,7);
   const pet = pets[0];
+  const displayedMonth = Number(selectedMonth.split('-')[1]); 
+  const totalAmount = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
+  // TODO: 積立機能ができたらplaceholderを変更する
+  const savingGoal = 10000;
+  const monthlySaving = 6000;
+  const achievementRate = Math.floor(monthlySaving / savingGoal * 100);
 
   useEffect(() => {
     fetchPets();
     fetchExpensesByMonth(selectedMonth);
   },[]);
   
-  const displayedMonth = Number(selectedMonth.split('-')[1]); 
-  const totalAmount = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
 
   // カテゴリごとにグループ分けする
   const groupByCategory = (expenses: Expense[]) => {
@@ -59,13 +64,13 @@ export default function HomeScreen() {
   const renderLabelComponent = (data: { value: number, color: string, label: string }[]) => {
     return data.map(({ value, color, label }) => (
       <XStack 
+        key={label} 
         justifyContent="space-between"
         paddingBottom={4}
         borderBottomWidth={1}
         borderBottomColor={wanchoColors.sage}
       >
         <XStack 
-          key={label} 
           alignItems="center"
           gap={6} 
         >
@@ -130,8 +135,8 @@ export default function HomeScreen() {
             padding={16}
             gap={16}
           >
-            <SizableText fontSize={fontSizes.heading1} color={wanchoColors.charcoal}>
-              今月の支出({displayedMonth}月): ¥{totalAmount.toLocaleString()}
+            <SizableText fontSize={fontSizes.title} fontWeight="bold" color={wanchoColors.charcoal}>
+              今月の支出({displayedMonth}月) ¥{totalAmount.toLocaleString()}
             </SizableText>
             {chartData.length > 0 ? (
               <YStack gap={16} alignItems="center">
@@ -159,11 +164,29 @@ export default function HomeScreen() {
             backgroundColor="$white"
             borderRadius={12}
             padding={16}
-            gap={8}
+            gap={12}
           >
-            <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
+            <SizableText fontSize={fontSizes.title} fontWeight="bold" color="$charcoal">
               積立目標
             </SizableText>
+            <XStack justifyContent="space-between">
+              <SizableText>目標金額: ¥{savingGoal}/月</SizableText>
+              <XStack>
+                <SizableText fontSize={fontSizes.title}>{achievementRate}</SizableText>
+                <SizableText fontSize={fontSizes.heading2}>%</SizableText>
+              </XStack>
+            </XStack>
+            <Progress value={achievementRate}>
+              <Progress.Indicator 
+                transition="bouncy" 
+                backgroundColor={wanchoColors.sage}
+              />
+            </Progress>
+            <XStack gap={6} justifyContent="flex-end">
+              <SizableText fontWeight="bold">¥{monthlySaving}</SizableText>
+              <SizableText fontWeight="bold">/</SizableText>
+              <SizableText>¥{savingGoal}</SizableText>
+            </XStack>
           </YStack>
 
           {/* 最近の支出セクション */}

@@ -103,7 +103,7 @@ export default function HomeScreen() {
           color={wanchoColors.charcoal}
           fontSize={fontSizes.body}
         >
-          ¥{value}
+          ¥{value.toLocaleString()}
         </SizableText>
       </XStack>
     ));
@@ -177,13 +177,20 @@ export default function HomeScreen() {
             padding={16}
             gap={12}
           >
-            <SizableText fontSize={fontSizes.title} lineHeight={lineHeights.title} fontWeight="bold" color="$charcoal">
+            <SizableText 
+              fontSize={fontSizes.title} 
+              lineHeight={lineHeights.title} 
+              fontWeight="bold" 
+              color="$charcoal"
+            >
               積立目標
             </SizableText>
             <XStack justifyContent="space-between">
-              <SizableText>目標金額: ¥{savingGoal}/月</SizableText>
+              <SizableText>目標金額: ¥{savingGoal.toLocaleString()}/月</SizableText>
               <XStack>
-                <SizableText fontSize={fontSizes.title}>{achievementRate}</SizableText>
+                <SizableText fontSize={fontSizes.title} lineHeight={lineHeights.heading2}>
+                  {achievementRate.toLocaleString()}
+                </SizableText>
                 <SizableText fontSize={fontSizes.heading2}>%</SizableText>
               </XStack>
             </XStack>
@@ -194,9 +201,9 @@ export default function HomeScreen() {
               />
             </Progress>
             <XStack gap={6} justifyContent="flex-end">
-              <SizableText fontWeight="bold">¥{monthlySaving}</SizableText>
+              <SizableText fontWeight="bold">¥{monthlySaving.toLocaleString()}</SizableText>
               <SizableText fontWeight="bold">/</SizableText>
-              <SizableText>¥{savingGoal}</SizableText>
+              <SizableText>¥{savingGoal.toLocaleString()}</SizableText>
             </XStack>
           </YStack>
 
@@ -229,6 +236,7 @@ export default function HomeScreen() {
             {/* 支出一覧 */}
             <FlatList
               data={recentExpenses}
+              scrollEnabled={false} 
               keyExtractor={(item) => String(item.id)}
               renderItem={({item}) => (
                 <SwipeableExpenseRow

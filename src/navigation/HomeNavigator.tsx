@@ -1,30 +1,30 @@
+import HomeScreen from "@/screens/home/HomeScreen";
 import AllRecordsScreen from "@/screens/record/AllRecordsScreen";
-import RecordScreen from "@/screens/record/RecordScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { wanchoColors } from "../../tamagui.config";
 
-export type RecordStackParamList = {
-  RecordMain: undefined;
+export type HomeStackParamList = {
+  Home: undefined;
   AllRecords: undefined;
 }
 
-const Stack = createNativeStackNavigator<RecordStackParamList>();
+const Stack = createNativeStackNavigator<HomeStackParamList>();
 
-export default function RecordNavigator() {
+export default function HomeNavigator() {
   return(
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen 
-        name='RecordMain'
-        component={RecordScreen}
+        name="Home"
+        component={HomeScreen}
       />
-      <Stack.Screen 
-        name='AllRecords'
-        component={AllRecordsScreen}
+      <Stack.Screen
+        name="AllRecords"
+        component={AllRecordsScreen} 
         options={{
           headerShown: true,
-          title:'',
+          title: '',
           headerBackTitle: '戻る',
-          headerStyle: { backgroundColor: wanchoColors.ivory },
+          headerStyle: { backgroundColor: wanchoColors.ivory},
           headerTintColor: wanchoColors.sage,
         }}
       />

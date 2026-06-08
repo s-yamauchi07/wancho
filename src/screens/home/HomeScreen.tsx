@@ -249,11 +249,13 @@ export default function HomeScreen() {
               >
                 最近の支出
               </SizableText>
-              <Pressable onPress={() => navigation.navigate('AllRecords')}>
-                <SizableText fontSize={fontSizes.body} color="$sage" fontWeight="bold">
-                  全て見る →
-                </SizableText>
-              </Pressable>
+              {chartData.length > 0 && (
+                <Pressable onPress={() => navigation.navigate('AllRecords')}>
+                  <SizableText fontSize={fontSizes.body} color="$sage" fontWeight="bold">
+                    全て見る →
+                  </SizableText>
+                </Pressable>
+              )}
             </XStack>
             {/* 支出一覧 */}
             <FlatList

@@ -43,6 +43,7 @@ export default function ExpenseFormModal({ visible, onClose, editingExpense }: P
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       categoryId: undefined,
+      amount: undefined,
       date: new Date(),
       memo: null,
     }

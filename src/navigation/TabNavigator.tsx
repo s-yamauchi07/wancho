@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '@/screens/home/HomeScreen';
 import PlannerScreen from '@/screens/planner/PlannerScreen';
 import ReportScreen from '@/screens/report/ReportScreen';
 import SettingsScreen from '@/screens/settings/SettingsScreen';
 import RecordNavigator from './RecordNavigator';
+import HomeNavigator from './HomeNavigator';
 
 export type TabParamList = {
   Home: undefined;
@@ -20,7 +20,7 @@ export default function TabNavigator() {
     <Tab.Navigator initialRouteName="Home">
       <Tab.Screen 
         name="Home"
-        component={HomeScreen} 
+        component={HomeNavigator} 
         options={{
           title: 'ホーム',
         }}

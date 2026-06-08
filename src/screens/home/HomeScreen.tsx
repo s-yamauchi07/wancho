@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { FlatList, Pressable, StyleSheet } from 'react-native';
+import { FlatList, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { TabParamList } from '@/navigation/TabNavigator';
+import { FontAwesome6 } from '@expo/vector-icons';
 import { PieChart } from 'react-native-gifted-charts';
 import { ScrollView } from 'react-native-gesture-handler';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { HomeStackParamList } from '@/navigation/HomeNavigator';
 import { YStack, XStack } from '@tamagui/stacks';
 import { SizableText } from '@tamagui/text';
 import { Avatar } from '@tamagui/avatar';
@@ -15,6 +15,7 @@ import { useExpenseStore } from '@/store/expenseStore';
 import { Expense } from '@/types/expense';
 import { CATEGORIES } from '@/constants/categories';
 import { SwipeableExpenseRow } from '@/components/record/SwipeableExpenseRow'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 export default function HomeScreen() {
   const { fetchPets, pets } = usePetStore();
@@ -32,7 +33,7 @@ export default function HomeScreen() {
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0,3);
 
-  const navigation = useNavigation<BottomTabNavigationProp<TabParamList, 'Home'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList, 'Home'>>();
 
   useEffect(() => {
     fetchPets();
@@ -71,6 +72,11 @@ export default function HomeScreen() {
         return acc;
     }, []);
 
+  // 支出がない場合はグレーのダミースライスを表示する
+  const displayChartData = chartData.length > 0
+    ? chartData
+    : [{ value: 1, color: wanchoColors.lightGray, label: '' }];
+
   // chartの汎用ラベル表示
   const renderLabelComponent = (data: { value: number, color: string, label: string }[]) => {
     return data.map(({ value, color, label }) => (
@@ -79,7 +85,7 @@ export default function HomeScreen() {
         justifyContent="space-between"
         paddingBottom={4}
         borderBottomWidth={1}
-        borderBottomColor={wanchoColors.sage}
+        borderBottomColor="$sage"
       >
         <XStack 
           alignItems="center"
@@ -94,14 +100,14 @@ export default function HomeScreen() {
           />
           <SizableText 
             color={wanchoColors.charcoal}
-            fontSize={fontSizes.body}
+            fontSize={fontSizes.heading2}
           >
             {label}
           </SizableText>
         </XStack>
         <SizableText 
           color={wanchoColors.charcoal}
-          fontSize={fontSizes.body}
+          fontSize={fontSizes.heading2}
         >
           ¥{value.toLocaleString()}
         </SizableText>
@@ -113,17 +119,17 @@ export default function HomeScreen() {
   // TODO: 今後nullではなくloadingのコンポーネントを表示させるように改修する。
   if (!pet) return null;
   return (
-    <ScrollView>
-      <YStack flex={1} backgroundColor="ivory">
-        <YStack padding={16} gap={16} paddingBottom={32}>
-          <YStack
-            backgroundColor="$ivory"
-            borderRadius={12}
-            padding={16}
+    <ScrollView
+      style={{backgroundColor: wanchoColors.ivory}}
+      contentContainerStyle={{ flexGrow: 1}}
+    >
+      <YStack>
+        <YStack padding={16} gap={16}>
+          <XStack
             alignItems="center"
             gap={12}
           >
-            <Avatar circular size="$12">
+            <Avatar circular size="$4">
               {pet.photoUri == null ? (
                 <Avatar.Image src={require('../../../assets/pet-registration/pet_avatar_default.png')} />
               ) : (
@@ -131,13 +137,14 @@ export default function HomeScreen() {
               )}
             </Avatar>
             <SizableText 
-              fontSize={fontSizes.heading1} 
+              fontSize={fontSizes.title} 
+              lineHeight={lineHeights.title}
               color={wanchoColors.charcoal}
               fontWeight="bold"
             >
-              {pet.name}
+              {pet.name}ちゃん
             </SizableText>
-          </YStack>
+          </XStack>
 
           {/* カテゴリ別グラフセクション */}
           <YStack
@@ -147,27 +154,42 @@ export default function HomeScreen() {
             gap={16}
           >
             <SizableText fontSize={fontSizes.title} lineHeight={lineHeights.title} fontWeight="bold" color={wanchoColors.charcoal}>
-              今月の支出({displayedMonth}月) ¥{totalAmount.toLocaleString()}
+              今月の支出({displayedMonth}月)
             </SizableText>
-            {chartData.length > 0 ? (
-              <YStack gap={16} alignItems="center">
-                <PieChart
-                  data={chartData}
-                  radius={100}
-                  innerRadius={50}
-                  donut
-                />
-                <YStack width="100%">
-                  <YStack gap={4}>
+            <YStack gap={16} alignItems="center">
+              <PieChart
+                data={displayChartData}
+                radius={100}
+                strokeColor="white"
+                strokeWidth={2}
+                innerCircleBorderColor="white"
+                innerRadius={50}
+                centerLabelComponent={() => (
+                  <YStack alignItems="center" gap={4}>
+                    <SizableText>合計</SizableText>
+                    <SizableText fontSize={fontSizes.heading1} fontWeight="bold">
+                      ¥{totalAmount.toLocaleString()}
+                    </SizableText>
+                  </YStack>
+                )}
+                donut
+              />
+              {chartData.length > 0 && (
+                <>
+                  <YStack width="100%" gap={4}>
                     {renderLabelComponent(chartData)}
                   </YStack>
-                </YStack>
-              </YStack>
-            ) : (
-              <SizableText fontSize={fontSizes.body} color="$greige">
-                今月の支出はありません
-              </SizableText>
-            )}
+                  <Pressable onPress={() => navigation.navigate('AllRecords')}>
+                  <XStack justifyContent="center" alignItems="center" gap={4}>
+                    <SizableText fontSize={fontSizes.body} color="$greige">
+                      支出の詳細を見る
+                    </SizableText>
+                    <FontAwesome6 name="chevron-right" size={12} />
+                  </XStack>
+                </Pressable>
+                </>
+              )}
+            </YStack>
           </YStack>
 
           {/* 積立目標プログレスバーセクション */}
@@ -227,7 +249,7 @@ export default function HomeScreen() {
               >
                 最近の支出
               </SizableText>
-              <Pressable onPress={() => navigation.navigate('Record')}>
+              <Pressable onPress={() => navigation.navigate('AllRecords')}>
                 <SizableText fontSize={fontSizes.body} color="$sage" fontWeight="bold">
                   全て見る →
                 </SizableText>
@@ -246,7 +268,11 @@ export default function HomeScreen() {
                 />
               )}
               ListEmptyComponent={
-                <YStack flex={1} alignItems="center" justifyContent="center" paddingTop={60}>
+                <YStack 
+                  flex={1} 
+                  alignItems="center" 
+                  justifyContent="center"
+                  >
                   <SizableText fontSize={fontSizes.body} color="$greige">
                     記録がありません
                   </SizableText>
@@ -254,7 +280,6 @@ export default function HomeScreen() {
               }
             />
           </YStack>
-
         </YStack>
       </YStack>
     </ScrollView>

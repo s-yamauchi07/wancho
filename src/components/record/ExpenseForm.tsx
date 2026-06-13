@@ -80,7 +80,6 @@ export default function ExpenseForm({ onSubmitSuccess, editingExpense }: Props) 
 
   return (
     <YStack flex={1} backgroundColor="$ivory">
-      {/* ヘッダー */}
       <XStack
         paddingHorizontal={16}
         paddingVertical={12}
@@ -89,7 +88,7 @@ export default function ExpenseForm({ onSubmitSuccess, editingExpense }: Props) 
         borderBottomWidth={1}
         borderBottomColor="$lightGray"
       >
-        <SizableText fontSize={fontSizes.heading2} fontWeight="bold" color="$charcoal">
+        <SizableText fontSize={fontSizes.heading1} fontWeight="bold" color="$charcoal">
           {editingExpense ? '支出を編集' : '支出を追加'}
         </SizableText>
         {editingExpense && (
@@ -105,7 +104,7 @@ export default function ExpenseForm({ onSubmitSuccess, editingExpense }: Props) 
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
       >
-        {/* 日付 */}
+      <YStack gap={8}>
         <Controller
           control={control}
           name="date"
@@ -192,7 +191,7 @@ export default function ExpenseForm({ onSubmitSuccess, editingExpense }: Props) 
           </SizableText>
         }
         </YStack>
-        <YStack gap={24}>
+        <YStack gap={8}>
           {/* カテゴリ選択 */}
           <Controller
             control={control}
@@ -260,6 +259,7 @@ export default function ExpenseForm({ onSubmitSuccess, editingExpense }: Props) 
             </Button.Text>
           </Button>
         </YStack>
+      </YStack>
       </ScrollView>
 
       <ErrorAlertDialog

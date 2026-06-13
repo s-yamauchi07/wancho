@@ -37,8 +37,8 @@ export default function CategoryGrid({ categories, selectedCategoryId, onSelect 
               backgroundColor={wanchoColors.lightGray}
             >
               <YStack
-                width={44}
-                height={44}
+                width={36}
+                height={36}
                 borderRadius={22}
                 alignItems="center"
                 justifyContent="center"

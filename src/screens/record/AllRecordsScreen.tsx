@@ -11,6 +11,9 @@ import { Expense } from '@/types/expense';
 import ExpenseFormModal from './ExpenseFormModal';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { HomeStackParamList } from '@/navigation/HomeNavigator';
 
 type Section = {
   title: string;
@@ -70,6 +73,7 @@ export default function AllRecordsScreen() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [confirmingItem, setConfirmingItem] = useState<Expense | null>(null);
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList, 'AllRecords'>>();
 
   const filteredExpenses = selectedCategoryId
     ? monthlyExpenses.filter((e) => e.categoryId === selectedCategoryId)
@@ -93,6 +97,15 @@ export default function AllRecordsScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
       <YStack flex={1} backgroundColor="$ivory">
+
+        <XStack paddingHorizontal={16} paddingTop={16}>
+          <Pressable onPress={() => navigation.goBack()}>
+            <XStack alignItems="center" gap={4}>
+              <FontAwesome6 name="chevron-left" color={wanchoColors.sage} />
+              <SizableText color="$sage">戻る</SizableText>
+            </XStack>
+          </Pressable>
+        </XStack>
 
         <XStack
           paddingHorizontal={24}

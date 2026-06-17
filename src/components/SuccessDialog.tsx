@@ -41,7 +41,7 @@ export default function SuccessDialog({
               <Button
                 backgroundColor="$sandBeige"
                 borderRadius={30}
-                paddingHorizontal={32}
+                paddingHorizontal={24}
                 marginHorizontal={16}
                 marginTop={16}
                 borderWidth={0}
@@ -56,7 +56,7 @@ export default function SuccessDialog({
               <Button
                 backgroundColor="$sage"
                 borderRadius={30}
-                paddingHorizontal={32}
+                paddingHorizontal={24}
                 marginHorizontal={16}
                 marginTop={16}
                 borderWidth={0}

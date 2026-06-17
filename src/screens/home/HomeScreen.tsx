@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FlatList, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { PieChart } from 'react-native-gifted-charts';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -19,10 +19,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 export default function HomeScreen() {
   const { fetchPets, pets } = usePetStore();
-  const { fetchExpensesByMonth, monthlyExpenses } = useExpenseStore();
-  const selectedMonth = new Date().toISOString().slice(0,7);
+  const { 
+    fetchExpensesByMonth, 
+    monthlyExpenses,
+    setSelectedMonth
+  } = useExpenseStore();
+  const getCurrentYearMonth = () => {
+    return new Date().toISOString().slice(0,7);
+  }
+
   const pet = pets[0];
-  const displayedMonth = Number(selectedMonth.split('-')[1]); 
   const totalAmount = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
   // TODO: 積立機能ができたらplaceholderを変更する
   const savingGoal = 10000;
@@ -33,13 +39,19 @@ export default function HomeScreen() {
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0,3);
 
-  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList, 'Home'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList, 'HomeMain'>>();
 
   useEffect(() => {
     fetchPets();
-    fetchExpensesByMonth(selectedMonth);
   },[]);
+
+  useFocusEffect(useCallback(() => {
+    const currentMonth = getCurrentYearMonth();
+    setSelectedMonth(currentMonth);
+    fetchExpensesByMonth(currentMonth);
+  },[]));
   
+  const displayedMonth = Number(getCurrentYearMonth().split('-')[1]);
 
   // カテゴリごとにグループ分けする
   const groupByCategory = (expenses: Expense[]) => {

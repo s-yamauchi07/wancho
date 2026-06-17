@@ -14,7 +14,7 @@ import { usePetStore } from '@/store/petStore';
 import { useExpenseStore } from '@/store/expenseStore';
 import { Expense } from '@/types/expense';
 import { CATEGORIES } from '@/constants/categories';
-import { SwipeableExpenseRow } from '@/components/record/SwipeableExpenseRow'
+import { ExpenseRow } from '@/components/record/ExpenseRow'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 export default function HomeScreen() {
@@ -275,10 +275,9 @@ export default function HomeScreen() {
               scrollEnabled={false} 
               keyExtractor={(item) => String(item.id)}
               renderItem={({item}) => (
-                <SwipeableExpenseRow
+                <ExpenseRow
                   item={item}
                   showDate={true} 
-                  enableSwipe={false}
                 />
               )}
               ListEmptyComponent={
